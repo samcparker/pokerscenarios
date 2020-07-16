@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nuxt",
-    "build": "nuxt build && nuxt start",
+    "build": "nuxt build",
     "start": "nuxt start",
     "export": "nuxt export",
     "serve": "nuxt serve"
@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.11.0",
     "@nuxtjs/pwa": "^3.0.0-beta.20",
+    "firebase": "^7.16.0",
     "nuxt": "^2.13.0"
   },
   "devDependencies": {

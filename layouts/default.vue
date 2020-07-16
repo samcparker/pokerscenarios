@@ -11,8 +11,19 @@
 
 <script>
 import NavDraw from "@/components/NavDraw.vue";
+  import firebase from "firebase/app"
   export default {
-  components: {NavDraw,}    
+  components: {NavDraw,},
+  mounted() {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        console.log("Logged in successfully!");
+      }
+      else {
+        console.log("Didn't log in: (")
+      }
+    });
+  }
   }
 </script>
 
