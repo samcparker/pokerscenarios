@@ -54,7 +54,7 @@ data () {
 
 <style>
     .gradient {
-        background: rgb(9,9,121);
-        background: linear-gradient(45deg, rgba(9,9,121,1) 0%, rgba(0,212,255,1) 100%);
+        background: rgb(255,0,0);
+background: linear-gradient(45deg, rgba(255,0,0,1) 0%, rgba(255,100,100,1) 100%);
     }
 </style>
