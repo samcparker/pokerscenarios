@@ -1,9 +1,9 @@
 <template>
   <v-app dark>
-    <nav-draw/>
-    <v-main>
+    <nav-draw style="height: 100%" />
+    <v-main style="height: 100%">
 
-        <nuxt />
+        <nuxt style="height: 100%" />
 
     </v-main>
   </v-app>

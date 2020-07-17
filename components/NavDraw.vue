@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" absolute dark app color="#121212" fixed>
+  <v-navigation-drawer v-model="drawer" dark app color="#121212" fixed>
     <v-list nav class="py-0">
       <v-list-item class="mt-4">
         <v-list-item-icon>
