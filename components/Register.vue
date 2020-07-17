@@ -31,18 +31,18 @@
           ></v-text-field>
         <v-row justify="center" class="px-4">
 
-          <v-btn @click.stop="submit" class="gradient" style="width: 100%" tile>Create Account</v-btn>
+          <v-btn @click.stop="submit" color="red" style="width: 100%" tile>Create Account</v-btn>
         </v-row>
       </v-form>
         <p class="my-0 py-0 mt-3 text-center">Or sign up with: </p>
       <v-row class="mx-0">
           <v-col align="center">
-              <v-btn class="px-0" style="width: 100%" tile  >
+              <v-btn class="px-0" style="width: 100%" outlined tile  >
                 <v-icon left>mdi-google</v-icon>Google
             </v-btn>
           </v-col>
           <v-col align="center">
-              <v-btn class="px-0" style="width: 100%" tile >
+              <v-btn class="px-0" style="width: 100%" outlined tile >
                 <v-icon left>mdi-facebook</v-icon>Facebook
             </v-btn>
           </v-col>

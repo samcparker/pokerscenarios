@@ -8,7 +8,7 @@
         <v-col>
           <div style="max-width: 50%">
             <h2 style="font-size: 50px;" class="mb-10">Take Your Poker to the Next Level</h2>
-            <v-btn color="red" tile large>Try Free Now</v-btn>
+            <v-btn color="red" tile large href="/register">Try Free Now</v-btn>
           </div>
         </v-col>
       </v-row>

@@ -107,7 +107,7 @@ data () {
         drawer: true,
         items: [
           { title: 'Home', icon: 'mdi-home', to: "/" },
-          { title: 'Practise', icon: 'mdi-gamepad-variant-outline', to: "/" },
+          { title: 'Practice', icon: 'mdi-gamepad-variant-outline', to: "/practice" },
           { title: 'Membership', icon: 'mdi-currency-usd-circle', to: "/membership"  },
           { title: 'About', icon: 'mdi-lightbulb', to: "/"  },
         ],
