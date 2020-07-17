@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" dark app color="#121212" fixed>
+  <!-- <v-navigation-drawer v-model="drawer" dark app color="#121212" fixed>
     <v-list nav class="py-0">
       <v-list-item class="mt-4">
         <v-list-item-icon>
@@ -43,6 +43,57 @@
         </v-list-item>
 
       </div>
+    </v-list>
+  </v-navigation-drawer> -->
+  <v-navigation-drawer v-model="drawer" dark app color="#121212" fixed>
+    <v-list nav class="py-0">
+      <v-list-item class="my-3">
+        <v-list-item-icon>
+          <v-icon>
+            mdi-poker-chip
+          </v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title style="font-size: 20px">
+            Poker Scenarios
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-divider class="my-5"></v-divider>
+      <v-list-item v-for="item in items" :key="item.name" :href="item.to" link>
+        <v-list-item-icon>
+          <v-icon>{{ item.icon }}</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-divider class="my-5"></v-divider>
+      <div v-if="!authenticated">
+        <v-list-item>
+          <v-list-item-content>
+            <v-btn href="/login" tile outlined>Login</v-btn>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-btn href="/register" tile outlined>Sign Up</v-btn>
+          </v-list-item-content>
+        </v-list-item>
+      </div>
+      <div v-else>
+        <v-list-item>
+          <v-list-item-content>
+            <v-btn href="/user/me" tile outlined>Profile</v-btn>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-btn @click="logout" tile outlined>Log Out</v-btn>
+          </v-list-item-content>
+        </v-list-item>
+      </div>
+      
     </v-list>
   </v-navigation-drawer>
 </template>
