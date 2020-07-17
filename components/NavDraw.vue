@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" permanent absolute dark app color="#121212" fixed>
+  <v-navigation-drawer v-model="drawer" absolute dark app color="#121212" fixed>
     <v-list nav class="py-0">
       <v-list-item class="mt-4">
         <v-list-item-icon>
@@ -57,7 +57,7 @@ data () {
         items: [
           { title: 'Home', icon: 'mdi-home', to: "/" },
           { title: 'Practise', icon: 'mdi-gamepad-variant-outline', to: "/" },
-          { title: 'Pricing', icon: 'mdi-currency-usd-circle', to: "/"  },
+          { title: 'Membership', icon: 'mdi-currency-usd-circle', to: "/membership"  },
           { title: 'About', icon: 'mdi-lightbulb', to: "/"  },
         ],
         buttons: [

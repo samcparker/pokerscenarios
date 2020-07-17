@@ -3,7 +3,7 @@
         <v-img src="/poker-vlo.png" class="bg-img">
             <v-container fill-height fluid>
                 <v-row align="center" justify="center">
-                    <login v-if="!authenticated" />
+                    <login />
                 </v-row>
             </v-container>    
         </v-img>
@@ -15,6 +15,7 @@ import Login from "@/components/Login.vue";
 
 export default {
     components: { Login },
+    middleware: "authenticated",
     methods: {
 
     },

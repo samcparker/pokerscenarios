@@ -14,6 +14,7 @@
 import Signup from "@/components/Signup.vue";
 
 export default {
+    middleware: "not-auth",
     components: { Signup },
 }
 </script>
