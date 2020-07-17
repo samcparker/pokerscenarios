@@ -3,7 +3,7 @@
         <v-img src="/poker-vlo.png" class="bg-img">
             <v-container fill-height fluid>
                 <v-row align="center" justify="center">
-                    <login/>
+                    <login v-if="!authenticated" />
                 </v-row>
             </v-container>    
         </v-img>
@@ -17,6 +17,18 @@ export default {
     components: { Login },
     methods: {
 
+    },
+    computed: {
+        authenticated() {
+            return this.$store.state.authentication.user != null;
+        },
+    },
+    mounted() {
+        // if (this.$store.state.authentication.user) {
+        //     this.$router.push({
+        //         path: "/"
+        //     });
+        // }
     }
 }
 </script>

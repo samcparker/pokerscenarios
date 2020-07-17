@@ -67,7 +67,8 @@ export default {
     methods: {
         submit() {
             console.log("Signing up with email '" + this.email + "' and password '" + this.password + "'.")
-            firebase.auth().createUserWithEmailAndPassword(this.email, this.password).catch(function(error) {
+            this.$fireAuth.createUserWithEmailAndPassword(this.email, this.password)
+            .catch(function(error) {
                 console.log(error)
             });
         }

@@ -71,7 +71,7 @@ export default {
         services: {
           auth: {
             initialize: {
-              onAuthStateChangedMutation: "SET_AUTH_USER"
+              onAuthStateChangedMutation: "authentication/SET_AUTH_USER"
             }
           }
         }

@@ -1,27 +1,25 @@
 export const state = () => ({
-    user: 5
+    user: null
 });
 
-export const actions = {
-    async logout({commit}) {
-        firebase.auth().signOut().then(() => {
-            console.log("Successfully signed out.")
-        }).catch(function(error) {
-            console.log("Unable to sign out: ", error);
-        });
-    }
-    
-}
-
 export const mutations = {
-    AUTH_STATE_CHANGED: (state, user) => {
-        state.user = user;
-    }
-}
+    // SET_AUTH_USER: (state, event) => {
+    //     // state.user = event.authUser;
+    // }
+    SET_AUTH_USER (state, event) {
+        console.log(event);
+        var authUser = event.authUser;
+        state.user = authUser;
 
-export const getters = {
-    getUser(state) {
-        return state.user;
+        if (authUser != null) {
+            this.$router.push({
+                path: "/user/me"
+            });
+        }
+        else {
+            this.$router.push({
+                path: "/login"
+            });
+        }
     }
-
 }

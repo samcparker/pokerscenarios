@@ -33,12 +33,12 @@
       <div v-else>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>Logged in!</v-list-item-title>
+            <v-list-item-title>Logged in! <a href="/user/me">My Profile</a></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item>
           <v-list-item-content>
-            <v-btn @click="logout" tile>{{uservalue}} , Logout</v-btn>
+            <v-btn @click="logout" tile>Logout</v-btn>
           </v-list-item-content>
         </v-list-item>
 
@@ -77,10 +77,11 @@ data () {
     methods: {
       
       logout() {
-        this.$fireAuth.signout();
-        // this.$store.authentication.sayWord()
-        // firebase.auth().signOut().then(function() { console.log("Logged out successfully! ")} ).catch(function(error) { console.log("Unsuccessfully logged out, ", error )} );
-        // this.$store.state.authentication.logout();
+        this.$fireAuth.signOut().then(function() {
+          console.log("Successfully signed out!");
+        }).catch(function(error) {
+          console.log("Error when signing out: ", error);
+        });
       }
     }
   }

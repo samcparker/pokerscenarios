@@ -50,7 +50,6 @@
 </template>
 
 <script>
-import firebase from "firebase/app";
 
 export default {
     data: () => {
@@ -61,25 +60,20 @@ export default {
         }
     },
     mounted() {
-        if (firebase.auth().currentUser) {
-            console.log(firebase.auth().currentUser);
-        }
-        else {
-            console.log("No one logged in at Login.vue!");
-        }
 
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                
-            }
-        });
     },
     methods: {
         submit() {
             // console.log("Signing in with email '" + this.email + "' and password '" + this.password + "'.")
-            firebase.auth().signInWithEmailAndPassword(this.email, this.password).catch((error) => {
-                console.log("Error");
+            
+            this.$fireAuth.signInWithEmailAndPassword(this.email, this.password)
+            .catch((error) => {
+                console.log("Error: ", error);
             });
+
+            
+
+            
 
             
         }
