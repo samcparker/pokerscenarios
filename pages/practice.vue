@@ -19,7 +19,7 @@
             </v-row>
         </v-row> -->
        
-      <v-container style="max-width: 1200px; height: 500px; background-color: green" fill-height>
+      <v-container style="max-width: 1200px; height: 500px;border-radius: 5%;"  class="table" fill-height>
 
         <v-row style="transform: translateY(-100px)">
           <v-col cols="4">
@@ -128,7 +128,7 @@
       </v-container>
 
     </v-row>
-        <v-row style="width: 100%; margin-top: 100px" class="mx-0">
+        <!-- <v-row style="width: 100%; margin-top: 100px" class="mx-0">
             <v-slide-group
               show-arrows>
                 <v-slide-item v-for="n in 10" :key="n" class="pa-4 mx-2" style="max-width: 300px">
@@ -143,7 +143,7 @@
                 
                 
             </v-slide-group>
-        </v-row>
+        </v-row> -->
   </v-container>
 </template>
 
@@ -158,11 +158,21 @@
   .card {
     min-width: 100px;
     max-width: 100px;
-    box-shadow: 1ch;
+    box-shadow: 0px 0px 19px 0px rgba(0,0,0,0.75);
+    padding: 0;
+    margin: 0 10px 0 0;
+    
+  }
+  .card > v-img {
   }
 
   p {
       font-weight: 900;
+  }
+
+  .table {
+    background: rgb(0,154,0);
+    background: radial-gradient(circle, rgba(0,154,0,1) 0%, rgba(0,79,16,1) 100%);
   }
 
 </style>
