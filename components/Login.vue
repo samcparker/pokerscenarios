@@ -4,8 +4,8 @@
       <v-form>
           <v-text-field 
             v-model="email"
-            name="Email"
-            label="email"
+            name="email"
+            label="Email"
             color="red"
             ></v-text-field>
           <v-text-field

@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" :permanent="true" absolute dark app color="#121212">
+  <v-navigation-drawer v-model="drawer" permanent absolute dark app color="#121212" fixed>
     <v-list nav class="py-0">
       <v-list-item class="mt-4">
         <v-list-item-icon>
@@ -23,16 +23,33 @@
         </v-list-item-content>
       </v-list-item>
       <v-divider class="my-5"></v-divider>
-      <v-list-item v-for="button in buttons" :key="button.title" link :href="button.to">
-        <v-list-item-content>
-          <v-btn :class="!button.outlined ? 'gradient' : ''" style="background-color: #1A1A1A;" :outlined="button.outlined">{{ button.title }}</v-btn>
-        </v-list-item-content>
-      </v-list-item>
+      <div v-if="!authenticated">
+        <v-list-item v-for="button in buttons" :key="button.title" link :href="button.to">
+          <v-list-item-content>
+            <v-btn :class="!button.outlined ? 'gradient' : ''" tile>{{ button.title }}</v-btn>
+          </v-list-item-content>
+        </v-list-item>
+      </div>
+      <div v-else>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>Logged in!</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-btn @click="logout" tile>{{uservalue}} , Logout</v-btn>
+          </v-list-item-content>
+        </v-list-item>
+
+      </div>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script>
+import firebase from 'firebase/app';
+
   export default {
 data () {
       return {
@@ -49,6 +66,23 @@ data () {
         ]
       }
     },
+    computed: {
+      authenticated() {
+        return this.$store.state.authentication.user != null;
+      },
+      uservalue() {
+        return this.$store.state.authentication.user;
+      }
+    },
+    methods: {
+      
+      logout() {
+        this.$fireAuth.signout();
+        // this.$store.authentication.sayWord()
+        // firebase.auth().signOut().then(function() { console.log("Logged out successfully! ")} ).catch(function(error) { console.log("Unsuccessfully logged out, ", error )} );
+        // this.$store.state.authentication.logout();
+      }
+    }
   }
 
 </script>

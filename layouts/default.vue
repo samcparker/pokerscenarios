@@ -12,6 +12,9 @@
 <script>
 import NavDraw from "@/components/NavDraw.vue";
   import firebase from "firebase/app"
+
+  import { mapMutations } from "vuex";
+
   export default {
   components: {NavDraw,},
   mounted() {
@@ -23,7 +26,8 @@ import NavDraw from "@/components/NavDraw.vue";
         console.log("Didn't log in: (")
       }
     });
-  }
+  },
+  
   }
 </script>
 

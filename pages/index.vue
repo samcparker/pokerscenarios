@@ -1,6 +1,6 @@
 <template>
-  <div style="width: 100%; height: 100%">
-    <v-img src="/poker-vlo.png" class="bg-img">
+  <div class="bg-img" >
+    <!-- <v-img src="/poker-vlo.png" class="bg-img"> -->
       <v-container style="height: 100%; max-width: 1200px;">
         <h1 class="text-center"><v-icon large>mdi-poker-chip</v-icon> Poker Scenarios</h1>
         <v-row>
@@ -32,7 +32,7 @@
         </v-container>
         
       </v-container>
-    </v-img>
+    <!-- </v-img> -->
   </div>
 </template>
 
@@ -51,8 +51,9 @@ export default {
 
 .bg-img {
 width: 100%;
-height: 100%;
+height: auto;
 position: absolute;
+background: url("/poker-vlo.png");
 z-index: 0;
 }
 </style>
