@@ -36,7 +36,7 @@ export default {
   ** Plugins to load before mounting the App
   ** https://nuxtjs.org/guide/plugins
   */
-  plugins: [],
+  plugins: ["~/plugins/validator.js"],
   /*
   ** Auto import components
   ** See https://nuxtjs.org/api/configuration-components
@@ -73,7 +73,8 @@ export default {
             initialize: {
               onAuthStateChangedMutation: "authentication/SET_AUTH_USER"
             }
-          }
+          },
+          firestore: true
         }
       }
     ],

@@ -29,18 +29,18 @@
         ></v-checkbox> -->
         <v-row justify="center" class="px-4">
 
-          <v-btn @click="submit" class="gradient" style="width: 100%" tile>Submit</v-btn>
+          <v-btn @click="submit" color="red" style="width: 100%" tile>Submit</v-btn>
         </v-row>
       </v-form>
         <p class="my-0 py-0 mt-3 text-center">Or login with: </p>
       <v-row class="mx-0">
           <v-col align="center">
-              <v-btn class="px-0" style="width: 100%" tile  >
+              <v-btn class="px-0" style="width: 100%" tile outlined>
                 <v-icon left>mdi-google</v-icon>Google
             </v-btn>
           </v-col>
           <v-col align="center">
-              <v-btn class="px-0" style="width: 100%" tile >
+              <v-btn class="px-0" style="width: 100%" tile outlined>
                 <v-icon left>mdi-facebook</v-icon>Facebook
             </v-btn>
           </v-col>
@@ -64,9 +64,10 @@ export default {
     },
     methods: {
         submit() {
-            // console.log("Signing in with email '" + this.email + "' and password '" + this.password + "'.")
-            
             this.$fireAuth.signInWithEmailAndPassword(this.email, this.password)
+              .then(function(user) {
+                console.log(user);
+              }) 
               .catch((error) => {
                   console.log("Error: ", error);
               }
