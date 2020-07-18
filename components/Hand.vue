@@ -33,7 +33,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .turn {
 position: absolute; 
 border-radius: 50%; 

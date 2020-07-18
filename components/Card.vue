@@ -14,7 +14,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .card {
     min-width: 100px;
     max-width: 100px;
