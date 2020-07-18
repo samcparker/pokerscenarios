@@ -110,10 +110,6 @@ export default {
 </script>
 
 <style scoped>
-
-  .card > v-img {
-  }
-
   p {
       font-weight: 900;
   }
