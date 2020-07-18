@@ -1,3 +1,5 @@
+import createPersistedState from 'vuex-persistedstate'
+
 export const strict = false
 
 export const state = () => ({
@@ -7,3 +9,8 @@ export const state = () => ({
 export const mutations = {
 
   }
+
+  export const plugins = [
+    createPersistedState()
+  ]
+  

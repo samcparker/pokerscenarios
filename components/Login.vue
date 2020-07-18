@@ -67,15 +67,10 @@ export default {
             // console.log("Signing in with email '" + this.email + "' and password '" + this.password + "'.")
             
             this.$fireAuth.signInWithEmailAndPassword(this.email, this.password)
-            .catch((error) => {
-                console.log("Error: ", error);
-            });
-
-            
-
-            
-
-            
+              .catch((error) => {
+                  console.log("Error: ", error);
+              }
+            );
         }
     }
 }

@@ -15,7 +15,14 @@ import Login from "@/components/Login.vue";
 
 export default {
     components: { Login },
-    middleware: "authenticated",
+    // middleware: "alreadyAuthenticated",
+    middleware({ store, redirect }) {
+        var authenticated = store.state.authentication.user != null;
+        console.log("Is authenticated: ", authenticated)
+        if (authenticated) {
+            return redirect("/user/me");
+        }
+    },
     methods: {
 
     },

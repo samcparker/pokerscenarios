@@ -115,8 +115,10 @@ export default {
   }
 
   .table {
-    background: rgb(0,154,0);
-    background: radial-gradient(circle, rgba(0,154,0,1) 0%, rgba(0,79,16,1) 100%);
+    background: url("/green-felt.jpg");
+    background-size: cover;
+    /* background: rgb(0,154,0); */
+    /* background: radial-gradient(circle, rgba(0,154,0,1) 0%, rgba(0,79,16,1) 100%); */
   }
 
 </style>

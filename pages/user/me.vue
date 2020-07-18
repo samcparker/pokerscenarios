@@ -69,7 +69,12 @@
       LineChart,
       DashboardComponent
     },
-    middleware: "not-auth",
+    middleware({ store, redirect }) {
+        var authenticated = store.state.authentication.user != null;
+        if (!authenticated) {
+            return redirect("/login");
+        }
+    },
     mounted() {
       //   if (!this.$store.state.authentication.user) {
       //     this.$router.push({

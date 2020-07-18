@@ -47,7 +47,7 @@
             </v-btn>
           </v-col>
       </v-row>
-      <p  class="mt-5 grey--text">Already have an account? <a href="login">Sign In</a></p>
+      <p  class="mt-5 grey--text">Already have an account? <a href="/login">Sign In</a></p>
   </div>
 </template>
 

@@ -12,7 +12,13 @@
 import Register from "@/components/Register.vue";
 
 export default {
-    middleware: "authenticated",
+    middleware({ store, redirect }) {
+        var authenticated = store.state.authentication.user != null;
+        console.log("Is authenticated: ", authenticated)
+        if (authenticated) {
+            return redirect("/user/me");
+        }
+    },
     components: { Register },
 }
 </script>
