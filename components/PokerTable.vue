@@ -1,107 +1,32 @@
 <template>
 <div>
     <!-- <v-row justify="center" style="margin-bottom: 100px"><h1>Your Turn</h1></v-row> -->
-          <v-btn @click="riverI += 1" style="margin-bottom: 100px">
-        Increase River
-      </v-btn>
+          <v-btn @click="riverI += 1" style="margin-bottom: 100px"> Increase River</v-btn>
+          <v-btn @click="increaseTurn" style="margin-bottom: 100px"> Increase Turn</v-btn>
   <v-container style="max-width: 1200px; height: 500px; border-radius: 5%;"  class="table" fill-height>
 
     <!-- <v-row style="transform: translateY(-100px)"> -->
     <!-- <v-row style="margin-top: -100px"> -->
 
       <v-row style="margin-top: -100px">
-          <v-col cols="4">
-            <v-row justify="center">
-              <v-col v-if="showNames" cols="12">
-                <p class="text-center">COMPUTER</p>
-              </v-col>
-              <v-col class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-              <v-col class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="4">
-            <v-row justify="center">
-              <v-col v-if="showNames" cols="12">
-                <p class="text-center">COMPUTER</p>
-              </v-col>
-              <v-col cols="6" class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-              <v-col cols="6" class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="4">
-            <v-row justify="center">
-              <v-col v-if="showNames" cols="12">
-                <p class="text-center">COMPUTER</p>
-              </v-col>
-              <v-col class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-              <v-col class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-            </v-row>
-          </v-col>
-
+          <hand :turn="turn == 2" :values="playersCards[2]"/>
+          <hand :turn="turn == 3" :values="playersCards[3]"/>
+          <hand :turn="turn == 4" :values="playersCards[4]"/>
         </v-row>
 
         <v-row justify="center" align="center">
-          <v-col v-for="n in 5" :key="n" class="card">
-            <v-img v-if="riverI >= n" :src="'/cards/' + river[n - 1] + '.png'"></v-img>
+          <card v-for="n in 5" :show="riverI >= n" :value="riverCards[n - 1]" :key="n"/>
+          <!-- <v-col v-for="n in 5" :key="n" class="card">
+            <v-img v-if="riverI >= n" :src="'/cards/' + riverCards[n - 1] + '.png'"></v-img>
             <v-img v-else src="/cards/red_back.png"></v-img>
-          </v-col>
+          </v-col> -->
         </v-row>
         
         <v-row style="margin-bottom: -100px">
         <!-- <v-row style="transform: translateY(100px)"> -->
-          <v-col cols="4">
-            <v-row justify="center">
-              <v-col v-if="showNames" cols="12">
-                <p class="text-center">COMPUTER</p>
-              </v-col>
-              <v-col class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-              <v-col class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="4">
-            <v-row justify="center">
-              <v-col v-if="showNames" cols="12">
-                <p class="text-center">YOU</p>
-              </v-col>
-              <v-col cols="6" class="card">
-                <v-img v-if="playersCards.length != 0" :src="'/cards/' + playersCards[0][0] + '.png'"></v-img>
-                <v-img v-else :src="'/cards/red_back.png'"></v-img>
-              </v-col>
-              <v-col cols="6" class="card">
-                <v-img v-if="playersCards.length != 0" :src="'/cards/' + playersCards[0][1] + '.png'"></v-img>
-                <v-img v-else :src="'/cards/red_back.png'"></v-img>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="4">
-            <v-row justify="center">
-              <v-col v-if="showNames" cols="12">
-                <p class="text-center">COMPUTER</p>
-              </v-col>
-              <v-col class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-              <v-col class="card">
-                <v-img src="/cards/red_back.png"></v-img>
-              </v-col>
-            </v-row>
-          </v-col>
+          <hand :turn="turn == 1" :values="playersCards[1]"/>
+          <hand :turn="turn == 0" :show="true" :values="playersCards[0]"/>
+          <hand :turn="turn == 5" :values="playersCards[5]"/>
 
         </v-row>
 
@@ -109,7 +34,9 @@
       </v-container>
     </div>
 </template>
-
+    <!-- <div style="position: absolute; border-radius: 50%; width: 150px; height: 150px; background-color: red; z-index:  100; opacity: 0.5">
+                  hi
+              </div> -->
 <script>
 export default {
     data: () => {
@@ -117,14 +44,21 @@ export default {
           cards: [],
           showNames: false,
           playersCards: [], // going clockwise starting at the player's position
-          river: [],
-          riverI: 2
+          riverCards: [],
+          riverI: 3,
+          turn: 0
         }
     },
     computed: {
 
     },
     methods: {
+      increaseTurn() {
+        
+        this.turn += 1;
+        this.turn %= 6;
+        console.log(this.turn);
+      },
       sourceFromCard(card) {
         return "/cards/" + card + ".png";
       },
@@ -159,30 +93,24 @@ export default {
         return card;        
       }
     },
-    mounted () {
+    created () {
       this.resetCards();
       
+      this.turn = Math.floor(Math.random() * 6);
       this.playerCards = this.getRandomCards(2);
 
       for (var i = 0; i < 6; i++) {
         this.playersCards.push(this.getRandomCards(2));
       }
 
-      this.river = this.getRandomCards(5);
+      this.riverCards = this.getRandomCards(5);
       console.log(this.river);
     }
 }
 </script>
 
 <style scoped>
-  .card {
-    min-width: 100px;
-    max-width: 100px;
-    box-shadow: 0px 0px 19px 0px rgba(0,0,0,0.75);
-    padding: 0;
-    margin: 0 5px 0 5px;
-    
-  }
+
   .card > v-img {
   }
 
