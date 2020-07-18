@@ -64,9 +64,10 @@ export default {
     },
     methods: {
         submit() {
+          var vm = this;
             this.$fireAuth.signInWithEmailAndPassword(this.email, this.password)
               .then(function(user) {
-                console.log(user);
+                vm.$router.push("/user/me");
               }) 
               .catch((error) => {
                   console.log("Error: ", error);

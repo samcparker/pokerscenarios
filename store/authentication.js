@@ -15,13 +15,12 @@ export const mutations = {
         state.user = authUser;
 
         if (authUser != null) {
-            console.log("Go to user me")
-            this.$router.push({
-                path: "/user/me"
-            });
+            // console.log("Go to user me")
+            // this.$router.push({
+            //     path: "/user/me"
+            // });
         }
         else {
-            console.log("go to login")
             this.$router.push({
                 path: "/login"
             });
