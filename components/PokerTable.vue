@@ -1,9 +1,11 @@
 <template>
 <div>
-    <v-row justify="center" style="margin-bottom: 100px"><h1>Your Turn</h1></v-row>
-  <v-container style="max-width: 1200px; height: 500px; border-radius: 5%; margin-bottom: 50px"  class="table" fill-height>
+    <!-- <v-row justify="center" style="margin-bottom: 100px"><h1>Your Turn</h1></v-row> -->
+  <v-container style="max-width: 1200px; height: 500px; border-radius: 5%;"  class="table" fill-height>
 
-    <v-row style="transform: translateY(-100px)">
+    <!-- <v-row style="transform: translateY(-100px)"> -->
+    <!-- <v-row style="margin-top: -100px"> -->
+      <v-row style="margin-top: -100px">
           <v-col cols="4">
             <v-row justify="center">
               <v-col v-if="showNames" cols="12">
@@ -64,7 +66,8 @@
           </v-col>
         </v-row>
         
-        <v-row style="transform: translateY(100px)">
+        <v-row style="margin-bottom: -100px">
+        <!-- <v-row style="transform: translateY(100px)"> -->
           <v-col cols="4">
             <v-row justify="center">
               <v-col v-if="showNames" cols="12">
