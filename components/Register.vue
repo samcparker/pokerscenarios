@@ -187,6 +187,7 @@ export default {
           vm.$fireStore.collection("users").doc(event.user.uid).set({
             username: vm.username
           });
+          vm.$router.push("/user/me");
         })
         .catch(function (error) {
           vm.emailError = emailRequirements[error];
