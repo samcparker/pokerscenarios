@@ -221,6 +221,7 @@ export default {
           vm.$fireStore.collection("users").doc(event.user.uid).set({
             username: vm.username
           });
+          vm.$store.state.authentication.user = event.user;
           vm.$router.push("/user/me");
         })
         .catch(function (error) {
