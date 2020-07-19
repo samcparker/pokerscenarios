@@ -1,5 +1,5 @@
 <template>
-  <div style="background-color:; width: 100%; height: 100%; color: black;">
+  <div style="background-color: white; width: 100%; height: 100%; color: black;">
     <v-container v-if="userData">
       <v-row class="mx-0 px-0">
 
