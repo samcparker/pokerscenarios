@@ -78,6 +78,9 @@ export default {
         }
       }
     ],
+    ['nuxt-stripe-module', {
+      publishableKey: 'pk_test_51H6YZNL1eBkJl2SwbHo5DCFtOtyMcbb5Ry2Z16F07OIJUevBfF9VFJlXZAitunTnPhhGKi9AsaV8TyLnGlXywrFa00BWOLj3H8',
+    }],
   ],
   /*
   ** Axios module configuration

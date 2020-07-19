@@ -1,7 +1,8 @@
 
 
 export const state = () => ({
-    user: null
+    user: null,
+    username: null
 });
 
 export const mutations = {
@@ -15,12 +16,19 @@ export const mutations = {
         state.user = authUser;
 
         if (authUser != null) {
-            // console.log("Go to user me")
+            this.$fireStore.collection("users").doc(authUser.uid).get()
+            .then((doc) => {
+                var data = doc.data();
+                state.username = data.username;
+            }
+            );
+
             // this.$router.push({
             //     path: "/user/me"
             // });
         }
         else {
+
             this.$router.push({
                 path: "/login"
             });

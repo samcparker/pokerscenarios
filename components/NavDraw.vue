@@ -84,6 +84,13 @@
       <div v-else>
         <v-list-item>
           <v-list-item-content>
+            <v-list-item-title>
+              Logged in as <a href="/users/me">{{ this.$store.state.authentication.username }}</a>
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
             <v-btn href="/user/me" tile outlined>Profile</v-btn>
           </v-list-item-content>
         </v-list-item>
