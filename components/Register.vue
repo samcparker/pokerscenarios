@@ -8,8 +8,8 @@
             label="Your Email"
             color="red"
             ></v-text-field>
-            <span v-if="emailError">
-              <p class="mb-1"><v-icon x-small>mdi-close</v-icon> {{ emailError }}</p>
+            <span v-for="(req, index) in emailRequirements" :key="index" >
+              <p v-if="emailErrors.indexOf(index) != -1" class="mb-1"><v-icon x-small>{{ emailErrors.indexOf(index) == -1 ? "mdi-check" : "mdi-close" }}</v-icon> {{ req }}</p>
             </span>
           <v-text-field 
             v-model="username"
@@ -36,8 +36,8 @@
             @click:append="showPassword = !showPassword"
             color="red"
           ></v-text-field>
-                      <span v-for="(req, index) in requirements" :key="index" >
-              <p v-if="errors.indexOf(index) != -1" class="mb-1"><v-icon x-small>{{ errors.indexOf(index) == -1 ? "mdi-check" : "mdi-close" }}</v-icon> {{ req }}</p>
+                      <span v-for="(req, index) in passwordRequirements" :key="index" >
+              <p v-if="passwordErrors.indexOf(index) != -1" class="mb-1"><v-icon x-small>{{ passwordErrors.indexOf(index) == -1 ? "mdi-check" : "mdi-close" }}</v-icon> {{ req }}</p>
             </span>
           <v-row class="flex-column mb-3">
 
@@ -81,7 +81,7 @@ export default {
       username: "",
       email: "",
       name: "",
-      requirements: {
+      passwordRequirements: {
         "min": "Your password must contain at least 8 characters.",
         "max": "Your password must contain a maximum of 100 characters.",
         "uppercase": "Your password must contain at least 1 uppercase character.",
@@ -90,12 +90,12 @@ export default {
         "spaces": "Your password cannot contain any spaces.",
         "matching": "Your passwords must match.",
       },
-      errors: [],
+      passwordErrors: [],
       emailRequirements: {
         "auth/invalid-email": "Your email address is invalid",
         "auth/email-already-in-use": "Your email address is already in use",
       },
-      emailError: null,
+      emailErrors: [],
       usernameErrors: [],
       usernameRequirements: {
         "min": "Your username must be a minimum of 3 characters.",
@@ -117,12 +117,55 @@ export default {
         color: "red"
       }
     },
-    async isUsernameAvailable() {
+    validate() {
+      var vm = this; // access 'this' within promises
+      this.emailError = null;
+     
+      var signupError = false;
+
+      if (!this.isPasswordLegal()) {
+        signupError = true;
+      }
+
+      if (!this.isEmailLegal()) {
+        this.signupError = true;
+      } 
+      if (!this.isUsernameLegal()) {
+        this.signupError = true;
+      }
+
+      return new Promise((resolve, reject) => {
+        vm.isUsernameAvailable()
+        .then(function(available) {
+          if (!available) {
+            vm.signupError = true;
+            vm.usernameErrors.push("taken");
+            resolve(false);
+          }
+          else if (signupError) {
+            resolve(false);
+          }
+          else if (available) {
+            resolve(true);
+          }
+          else {
+            reject();
+          }
+        }).catch(function(error) {
+          reject(error);
+        });
+      });
       
     },
-    validate() {
-      this.emailError = null;
-      var passwordSchema = new passwordValidator();
+    isEmailLegal() {
+      this.emailErrors = [];
+      if (!validator.isEmail(this.email)) {
+        this.emailErrors.push("The email address provided is invalid.");
+      }
+      return this.emailErrors.length == 0;
+    },
+    isPasswordLegal() {
+       var passwordSchema = new passwordValidator();
 
       passwordSchema
       .is().min(8)
@@ -132,17 +175,15 @@ export default {
       .has().digits()
       .has().not().spaces();
       
-      this.errors = passwordSchema.validate(this.password, {list: true});
+      this.passwordErrors = passwordSchema.validate(this.password, {list: true});
 
       if (this.password != this.password2) {
-        this.errors.push("matching");
+        this.passwordErrors.push("matching");
       }
 
-      if (!validator.isEmail(this.email)) {
-        this.emailError = "The email address provided is invalid."
-      }
-
-      // check if username is already taken
+      return this.passwordErrors.length == 0;
+    },
+    isUsernameLegal() {
       var usernameSchema = new passwordValidator();
       usernameSchema
       .is().min(3)
@@ -151,33 +192,35 @@ export default {
       .has().not().symbols();
 
       this.usernameErrors = (usernameSchema.validate(this.username, {list: true}));
-      console.log(this.usernameErrors);
-      var vm = this;
-      this.$fireStore.collection("users").where("username", "==", this.username.toLowerCase()).get().then(function(q) {
-        if (q.empty) {
-          if (vm.errors.length == 0 && vm.usernameErrors.length == 0 && vm.emailError == null) {
-            vm.createUser();
+      return this.usernameErrors.length == 0;
+    },
+    isUsernameAvailable() {
+      return new Promise((resolve, reject) => {
+        this.$fireStore.collection("users").where("username", "==", this.username.toLowerCase()).get()
+        .then(function(querySnapshot) {
+          if (!querySnapshot.empty) {
+            console.log("Username is unavailable.");
+            resolve(false);
           }
           else {
-            console.log("Other demands were not met!");
-            console.log(vm.errors);
-            console.log(vm.usernameErrors);
-            console.log(vm.emailError);
+            console.log("Username is available!");
+            resolve(true);
           }
-        } 
-        else {
-          vm.usernameErrors.push("taken");
-          console.log("User already exists with that name!")
-        }
-      }).catch(function(error) {
-        console.log(error)
+        })
+        .catch(function(error) {
+          reject(error);
+        });
       });
     },
-
     submit() {
       var vm = this;
 
-      this.validate();
+      this.validate().then(function(valid) {
+        console.log("Valid: ", valid)
+        if (valid) {
+          vm.createUser();
+        }
+      });
       
     },
     createUser() {
@@ -190,7 +233,8 @@ export default {
           vm.$router.push("/user/me");
         })
         .catch(function (error) {
-          vm.emailError = emailRequirements[error];
+          console.log(error);
+          vm.emailErrors.push(error.code);
         });
     }
   }
