@@ -10,6 +10,9 @@ export default {
   ** Nuxt target
   ** See https://nuxtjs.org/api/configuration-target
   */
+  generate: {
+    fallback: true
+  },
   target: 'static',
   /*
   ** Headers of the page
