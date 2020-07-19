@@ -66,8 +66,15 @@ export default {
         submit() {
           var vm = this;
             this.$fireAuth.signInWithEmailAndPassword(this.email, this.password)
-              .then(function(user) {
-                vm.$router.push("/user/me");
+              .then(function(event) {
+                var docRef = vm.$fireStore.collection("users").doc(event.user.uid);
+                docRef.set({
+                  lastLoggedIn: Date.now(),
+                }, { merge: true });
+                docRef.get().then((doc) => {
+                  vm.$router.push("/user/" + doc.data().username);
+                });
+                
               }) 
               .catch((error) => {
                   console.log("Error: ", error);

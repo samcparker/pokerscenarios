@@ -16,6 +16,7 @@
     "@nuxtjs/pwa": "^3.0.0-beta.20",
     "chart.js": "^2.9.3",
     "firebase": "^7.16.0",
+    "moment": "^2.27.0",
     "nuxt": "^2.13.0",
     "nuxt-stripe-module": "^2.1.0",
     "password-validator": "^5.0.3",

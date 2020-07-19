@@ -190,7 +190,6 @@ export default {
         this.$fireStore.collection("users").where("username", "==", this.username.toLowerCase()).get()
         .then(function(querySnapshot) {
           if (!querySnapshot.empty) {
-            console.log("Username is unavailable.");
             resolve(false);
           }
           else {
@@ -207,7 +206,6 @@ export default {
       var vm = this;
 
       this.validate().then(function(valid) {
-        console.log("Valid: ", valid)
         if (valid) {
           vm.createUser();
         }
@@ -219,13 +217,15 @@ export default {
       this.$fireAuth.createUserWithEmailAndPassword(this.email, this.password)
         .then(function (event) {
           vm.$fireStore.collection("users").doc(event.user.uid).set({
-            username: vm.username
+            username: vm.username,
+            joinedOn: Date.now(),
+            isMember: false,
+            lastLoggedIn: Date.now(),
           });
           vm.$store.state.authentication.user = event.user;
-          vm.$router.push("/user/me");
+          vm.$router.push("/user/" + vm.username);
         })
         .catch(function (error) {
-          console.log(error);
           vm.emailErrors.push(error.code);
         });
     }
