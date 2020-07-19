@@ -81,6 +81,8 @@ export default {
       username: "",
       email: "",
       name: "",
+      signupError: false,
+      passwordErrors: [],
       passwordRequirements: {
         "min": "Your password must contain at least 8 characters.",
         "max": "Your password must contain a maximum of 100 characters.",
@@ -90,12 +92,11 @@ export default {
         "spaces": "Your password cannot contain any spaces.",
         "matching": "Your passwords must match.",
       },
-      passwordErrors: [],
+      emailErrors: [],
       emailRequirements: {
         "auth/invalid-email": "Your email address is invalid",
         "auth/email-already-in-use": "Your email address is already in use",
       },
-      emailErrors: [],
       usernameErrors: [],
       usernameRequirements: {
         "min": "Your username must be a minimum of 3 characters.",
@@ -107,24 +108,14 @@ export default {
     }
   },
   methods: {
-    checkStyle(index) {
-      if (this.errors.indexOf(index) == -1) {
-        return {
-          color: "white"
-        }
-      }
-      return {
-        color: "red"
-      }
-    },
     validate() {
       var vm = this; // access 'this' within promises
       this.emailError = null;
      
-      var signupError = false;
+      this.signupError = false;
 
       if (!this.isPasswordLegal()) {
-        signupError = true;
+        this.signupError = true;
       }
 
       if (!this.isEmailLegal()) {
@@ -142,7 +133,7 @@ export default {
             vm.usernameErrors.push("taken");
             resolve(false);
           }
-          else if (signupError) {
+          else if (vm.signupError) {
             resolve(false);
           }
           else if (available) {
