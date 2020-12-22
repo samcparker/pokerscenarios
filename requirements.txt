@@ -1,0 +1,5 @@
+flask
+textdistance
+sklearn
+numpy
+password-strength

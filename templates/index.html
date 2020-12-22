@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Password Universe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="https://d3js.org/d3-color.v1.min.js"></script>
+  <script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
+  <script src="https://d3js.org/d3-ease.v1.min.js"></script>
+  <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+  <script src="https://d3js.org/d3-selection.v1.min.js"></script>
+  <script src="https://d3js.org/d3-timer.v1.min.js"></script>
+  <script src="https://d3js.org/d3-transition.v1.min.js"></script>
+  <script src="https://d3js.org/d3-drag.v1.min.js"></script>
+  <script src="https://d3js.org/d3-zoom.v1.min.js"></script>
+  <script src="https://d3js.org/d3-random.v2.min.js"></script>
+  <script src="https://unpkg.com/@saehrimnir/druidjs"></script>
+  <script src="https://unpkg.com/d3-3d/build/d3-3d.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"
+    integrity="sha512-iBAeBWWWFb8HqSBcrqcz98iIpuVH1la39dEYHtyQ/pGpeCQTQVvLJOWAuhv2Q7JSHp9k7hWA7sGxU3hHJe+tFg=="
+    crossorigin="anonymous"></script>
+  <script>
+    const ADDRESS = "http://{{host}}:{{port}}";
+    let params = (new URL(document.location)).searchParams;
+    const USER_PASSWORD = params.get("password") || "password";
+    const PASSWORD_AMOUNT = params.get("amount") || 50;
+
+
+    function colorGradient(fadeFraction, rgbColor1, rgbColor2, rgbColor3) {
+      var color1 = rgbColor1;
+      var color2 = rgbColor2;
+      var fade = fadeFraction;
+
+      // Do we have 3 colors for the gradient? Need to adjust the params.
+      if (rgbColor3) {
+        fade = fade * 2;
+
+        // Find which interval to use and adjust the fade percentage
+        if (fade >= 1) {
+          fade -= 1;
+          color1 = rgbColor2;
+          color2 = rgbColor3;
+        }
+      }
+
+      var diffRed = color2.red - color1.red;
+      var diffGreen = color2.green - color1.green;
+      var diffBlue = color2.blue - color1.blue;
+
+      var gradient = {
+        red: parseInt(Math.floor(color1.red + (diffRed * fade)), 10),
+        green: parseInt(Math.floor(color1.green + (diffGreen * fade)), 10),
+        blue: parseInt(Math.floor(color1.blue + (diffBlue * fade)), 10),
+      };
+
+      var rgb = 'rgb(' + gradient.red + ',' + gradient.green + ',' + gradient.blue + ')';
+ 
+      return rgb;
+    }
+
+    function getColor(password) {
+      var strength = password.strength
+      return colorGradient(strength, {red: 255, green: 0, blue: 0}, {red: 0, green: 255, blue: 0}, {red: 200, green: 247, blue: 200});
+
+ 
+    }
+
+    function getFontWeight(password) {
+      return password["isEarth"] ? "bold" : "normal";
+    }
+
+    function getFontSize(password) {
+      return password["isEarth"] ? "30px" : "20px";
+    }
+
+    function getDropShadow(password) {
+      return password["isEarth"] ? "url(#red-glow)" : "";
+    }
+
+
+
+    $(document).ready(function () {
+      let points = [];
+
+      function update() {
+        var rr = document.getElementById("radius_range");
+        var wr = document.getElementById("width_range");
+        var hr = document.getElementById("height_range");
+        var tor = document.getElementById("text_opacity_range");
+
+ 
+
+        svg.selectAll("circle").data(points).enter()
+          .append("circle")
+          // .style("box-shadow", getBoxShadow())
+          .on("mouseover", function (d, i) {
+            d3.select(this).attr("fill", "white");
+          })
+          .on("mouseout", function (d) {
+            return d3.select(this).attr("fill", getColor(d));
+          })
+          .on("click", function (d, i) {
+            setCentre(d);
+          });
+
+
+
+
+        svg.selectAll("text")
+          .data(points)
+          .enter()
+          .append("text")
+          .attr("fill", "white")
+          .text(function (d) {
+            return d.name
+          })
+          .on("mouseover", function (d, i) {
+            console.log(d.name);
+          })
+          .style("mix-blend-mode", "exclusion")
+          .style("font-weight", function (d) {
+            return getFontWeight(d);
+          })
+          .style("font-size", function (d) {
+            return getFontSize(d);
+          });
+        // modify width of universe from width slider
+        var position_x = 0.01 * (wr.value - 100);
+        var text_offset_x = 20;
+        // modify height of universe from slider
+        var position_y = 0.01 * (hr.value - 100);
+        var text_offset_y = 0;
+
+        d3.selectAll("circle")
+          .transition().duration(1000)
+          .style("filter", function (d) {
+            return getDropShadow(d)
+          })
+          .attr("cx", function (d) {
+            d["posx"] = position_x * d.x;
+            return position_x * d.x;
+          })
+          .attr("cy", function (d) {
+            d["posy"] = position_y * d.y;
+            return position_y * d.y;
+          })
+          .attr("r", rr.value * 0.2)
+          .attr("fill", function (d) {
+            return getColor(d);
+          });
+
+        d3.selectAll("text")
+          .style("font-weight", function (d) {
+            return getFontWeight(d);
+          })
+          .transition().duration(1000)
+          .attr("x", function (d) {
+            return d.x * position_x + text_offset_x;
+          })
+          .attr("y", function (d) {
+            return d.y * position_y + text_offset_y
+          })
+          .text(function (d) {
+            return d.name
+          })
+          .style("font-size", function (d) {
+            return getFontSize(d);
+          });
+
+
+
+        // modify text opacity from slider
+
+
+        d3.selectAll("text").attr("fill", "rgb(255, 255, 255, " + tor.value / 100 + ")");
+
+      }
+
+
+
+      var svg = d3.select("#universe").attr("background-color", "#000")
+        .call(d3.zoom().on("zoom", function () {
+          svg.attr("transform", d3.event.transform)
+        }))
+        .append("g");
+
+
+      /** 
+       * Convert a point to a new point with screen coordinates.
+       */
+      function toScreenCoordinates(point) {
+        let p = point;
+        p.x = point.ox * window.innerWidth;
+        p.y = point.oy * window.innerWidth;
+
+        return p;
+      }
+
+      function finishedLoading() {
+        d3.select("#loading").remove();
+      }
+
+      /**
+             Get json object of points.
+             
+             Example:
+             points = {
+               password: {
+                 x: 0.4,
+                 y: 0.3
+                },
+                ...
+              }
+              */
+
+      
+
+      $.get(`${ADDRESS}/points?password=${USER_PASSWORD}&amount=${PASSWORD_AMOUNT}`, function (response) {
+        // Plot these points using d3.js
+        finishedLoading();
+
+        points = response.points;
+
+        // transform stars from ox,oy to x,y
+
+        for (var i = 0; i < points.length; i++) {
+          points[i] = toScreenCoordinates(points[i]);
+        }
+        update();
+
+      });
+
+      function setCentre(d) {
+        // move this star to center
+        // position all other stars around it
+
+        // we only need to change d.x and d.y for each star but use d.ox and d.oy to get there
+        function angle(b) {
+          let dx = b.ox - d.ox;
+          let dy = d.oy - b.oy;
+          let angle = Math.atan2(dx, dy);
+          return angle;
+        }
+
+        function magnitude(b) {
+          let m = Math.sqrt(Math.abs((d.ox - b.ox) * (d.ox - b.ox) - (d.oy - b.oy) * (d.oy - b.oy)));
+          return m;
+        }
+
+        for (var i = 0; i < points.length; i++) {
+          points[i]["distanceFromOrigin"] = magnitude(points[i]);
+          points[i]["angleFromOrigin"] = angle(points[i]);
+          points[i]["isEarth"] = false;
+        }
+
+        // clone points list
+        var points2 = [];
+        for (var i = 0; i < points.length; i++) {
+          points2[i] = points[i];
+        }
+
+        points2.sort((a, b) => ((a.angleFromOrigin) > (b.angleFromOrigin)) ? 1 : -1);
+        // points.sort((a, b) => ((a.angleFromOrigin) > (b.angleFromOrigin)) ? 1 : -1);
+        d.x = 0;
+        d.y = 0;
+        d["isEarth"] = true;
+
+
+        // Preserve the ordering of the original `points` list otherwise they are mixed up on canvas
+        // TODO: Figure out a ID or key system where the original points list can be mixed around without affecting the canvas
+        for (var i = 0; i < points.length; i++) {
+          for (var j = 0; j < points.length; j++) {
+            if (points[j].name == points2[i].name) {
+              points[j].x = window.innerWidth * (d.x + points2[i].distanceFromOrigin * Math.sin((i * 2 * Math
+                .PI) / points.length));
+              points[j].y = window.innerWidth * (d.y + points2[i].distanceFromOrigin * Math.cos((i * 2 * Math
+                .PI) / points.length));
+            }
+          }
+        }
+
+        update();
+      }
+
+      $("#radius_range").on("input", update);
+      $("#width_range").on("input", update);
+      $("#height_range").on("input", update);
+      $("#text_opacity_range").on("input", update);
+
+      $("#reset_view_button").on("click", function () {
+        for (var i = 0; i < points.length; i++) {
+          points[i] = toScreenCoordinates(points[i]);
+          points[i]["isEarth"] = false;
+
+        }
+        update();
+      });
+
+      $("#add_star_button").on("click", function () {
+        var add = document.getElementById("add_star");
+        var new_password = add.value;
+
+        $.get(`${ADDRESS}/position/${new_password}`, function (response) {
+          var alreadyIn = false;
+          for (var i = 0; i < points.length; i++) {
+            if (points[i].name == new_password) {
+              alreadyIn = true;
+              break;
+            }
+          }
+
+
+          if (!alreadyIn) {
+            response = toScreenCoordinates(response);
+
+            points.push(response);
+            setCentre(points[points.length - 1]);
+          } else {
+            for (var i = 0; i < points.length; i++) {
+              if (points[i].name == new_password) {
+                return setCentre(points[i]);
+              }
+            }
+          }
+
+        });
+      });
+    });
+  </script>
+  <style type="text/css">
+    html,
+    body,
+    svg {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background-color: black;
+    }
+
+    #control {
+      background-color: rgb(0, 0, 0, 0.5);
+      color: white;
+      width: 250px;
+      height: 100%;
+      font-family: 'Courier New', Courier, monospace;
+      position: absolute;
+      top: 0;
+
+      margin-top: 10px;
+      padding: 0px 10px 10px 10px;
+      border-style: solid;
+      border-radius: 5%;
+      border-color: rgb(255, 255, 255, 0.1);
+      border-width: 1px;
+    }
+
+    #key {
+      background-color: rgb(0, 0, 0, 0.5);
+      color: white;
+      width: 250px;
+      font-family: 'Courier New', Courier, monospace;
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin-top: 10px;
+      padding: 0px 10px 10px 10px;
+      border-style: solid;
+      border-radius: 5%;
+      border-color: rgb(255, 255, 255, 0.1);
+      border-width: 1px;
+    }
+
+    hr {
+      border-width: 1px;
+      border-color: rgb(255, 255, 255, 0.1);
+    }
+
+    h3 {
+      font-size: 15px;
+    }
+
+    p,
+    label {
+      font-size: 13px;
+      margin: 0;
+      margin-bottom: 5px;
+    }
+
+
+
+    .filter label {
+      display: inline-block;
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+
+    .filter input {
+      vertical-align: middle;
+    }
+
+    .filter label span {
+      vertical-align: middle;
+    }
+
+    .changeNameButtons {
+      background-color: Transparent;
+      background-repeat: no-repeat;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      outline: none;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <svg id="universe">
+    <defs>
+      <filter id="red-glow" filterUnits="userSpaceOnUse" x="-50%" y="-50%" width="200%" height="200%">
+        <!-- blur the text at different levels-->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur5" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur10" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur20" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur30" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="50" result="blur50" />
+        <!-- merge all the blurs except for the first one -->
+        <feMerge result="blur-merged">
+          <feMergeNode in="blur10" />
+          <feMergeNode in="blur20" />
+          <feMergeNode in="blur30" />
+          <feMergeNode in="blur50" />
+        </feMerge>
+        <!-- recolour the merged blurs red-->
+        <feColorMatrix result="red-blur" in="blur-merged" type="matrix"
+          values=" 1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0" />
+        <feMerge>
+          <feMergeNode in="red-blur" /> <!-- largest blurs coloured red -->
+          <feMergeNode in="blur5" /> <!-- smallest blur left white -->
+          <feMergeNode in="SourceGraphic" /> <!-- original white text -->
+        </feMerge>
+      </filter>
+
+
+    </defs>
+  </svg>
+
+  <div id="control">
+    <h2>Password Universe</h2>
+    <hr>
+    <label for="radius_range"><span>Star Size</span></label>
+    <input style="width: 100%" label="radius" type="range" min="1" max="100" value="50" id="radius_range"
+      name="radius_range">
+
+    <label for="width_range"><span>Width Range</span></label>
+    <input style="width: 100%" label="width" type="range" min="1" max="200" value="50" id="width_range"
+      name="width_range">
+
+    <label for="height_range"><span>Height Range</span></label>
+    <input style="width: 100%" label="height" type="range" min="1" max="200" value="50" id="height_range"
+      name="height_range">
+
+    <label for="text_opacity_range"><span>Text Opacity</span></label>
+    <input style="width: 100%" label="opacity" type="range" min="1" max="100" value="50" id="text_opacity_range"
+      name="text_opacity_range">
+
+    <hr>
+    <!-- <label for="add_star"><span>Add a Star</span></label>
+      <input type="text" style="width: 100%" label="add_star"> -->
+    <div style="width: 100%;">
+      <label><span>Add/Centre a Star</span></label>
+      <input type="text" id="add_star">
+      <button id="add_star_button">Add</button>
+
+    </div>
+    
+    
+    
+    <button id="reset_view_button">Reset View</button>
+    <h1 id="loading">Calculating star positions... This may take some time.</h1>
+  </div>
+  <div id="key">
+    <h3>Key</h3>
+    <p>Star Size: Popularity</p>
+    <p>Password Strength:</p>
+    <div class="row">
+      <div class="col-sm-6">
+        Bad
+      </div>
+      <div class="col-sm-6" style="text-align: right;">
+        Good
+      </div>
+    </div>
+    <div style="background-image: linear-gradient(to right, red , green, rgb(200, 247, 200)); width: 100%; height: 20px">
+  </div>
+
+</div>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>
