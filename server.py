@@ -32,7 +32,8 @@ HOST = getConfig("host")
 PORT = getConfig("port")
 STARS_FOLDER = getConfig("stars_folder")
 
-app = Flask(__name__)
+app = Flask(__name__,
+    static_url_path='/static', )
 
 # global object for Ridge prediction
 clf = None
@@ -47,6 +48,8 @@ def index():
 def position(new_password=None):
     global clf
     global password_list
+
+    print(new_password)
 
     if not clf or not password_list:
         return {"error": "prediction not started yet"}
@@ -84,9 +87,8 @@ def generateCLF(stars):
 @app.route("/points")
 def points():
     global clf
-    global user_password 
     global password_list
-    user_password = request.args.get("password", "password")
+
     password_amount = int(request.args.get("amount", 50))
 
     file_exists = True
@@ -156,7 +158,7 @@ def points():
         f = open(".\\" + STARS_FOLDER + "\\tsne-" + str(password_amount) + ".json", "w")
         f.write(json.dumps(stars, indent=4))
         f.close()
-
+        print("AAAAAAAAAAAAAAAAAA")
         return {"points": stars, "received": "ok"}
 
 if __name__ == "__main__":
