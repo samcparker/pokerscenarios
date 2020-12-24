@@ -22,12 +22,31 @@ export default class Controller {
         });
     }
 
+    generateUniverse(params, callback) {
+
+        $.get(`/generate?name=${params.name}&amount=${params.amount}&password_db=${params.password_db}&dr_method=${params.dr_method}&linear_regression=${params.linear_regression}&extra_passwords=${params.extra_passwords}`, 
+        response => {
+            this.points = response.points;
+            callback(response.points);
+        });
+    }
+
     /**
      * 
      * @param {string} name 
      * @param {function} callback 
      */
     addStar(name, callback) {
+        // check if star is already in universe
+        for (var i = 0; i < this.points.length; i++) {
+            if (this.points[i].name == name) {
+                this.centreStar(this.points[i], function(points) {
+                    callback(points);
+                });
+                return;
+            }
+        }
+        
         $.get(`/position/${name}`, response => {
             this.points.push(response);
             // Centre the new star.
@@ -48,6 +67,7 @@ export default class Controller {
     centreStar(star, callback) {
         // find out modified positions of stars
 
+        // `star` is null so remove origin
         if (!star) {
             // remove origin for each point
             for (var i = 0; i < this.points.length; i++) {
@@ -57,8 +77,8 @@ export default class Controller {
             return;
         }
 
+        // there are no points so do nothing, return an error
         if (!this.points) {
-            // getPoints has not been called
             return null;
         }
 

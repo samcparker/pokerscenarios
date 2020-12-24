@@ -40,7 +40,7 @@ class PasswordUniverse():
             with open("{}\\tsne-{}.json".format(STARS_FOLDER, amount), "r") as f:
                 tsne = json.loads(f.read())
         else:
-            tsne = self._generateTSNE(amount)
+            tsne = self._generateTSNE(amount, "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt")
             # write tsne to file called tsne-{amount}.json
             with open("{}\\tsne-{}.json".format(STARS_FOLDER, amount), "w") as f:
                 f.write(json.dumps(tsne, indent=4))
@@ -54,7 +54,20 @@ class PasswordUniverse():
 
         return tsne, clf
 
-    
+    def generate(self, name, amount, password_db, dr_method, linear_regression, extra_passwords):
+        tsne = self._generateTSNE(amount, password_db)
+        # write tsne to file called {name}.json
+        with open("{}\\{}.json".format(STARS_FOLDER, name), "w") as f:
+            f.write(json.dumps(tsne, indent=4))
+
+        clf = None
+
+        if linear_regression:
+            clf = self._generateCLF(tsne)
+            pickle.dump(clf, open("{}\\{}.pickle".format(STARS_FOLDER, name), "wb"))
+
+        return tsne, clf
+
     # check if a file exists with folder name and file name
     def _fileExists(self, file_name, folder_name):
         # ensure folder_name folder exists
@@ -105,8 +118,8 @@ class PasswordUniverse():
 
         return Ridge(alpha=1.0).fit(X, Y)
 
-    def _generateTSNE(self, amount):
-        with urllib.request.urlopen('https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt') as f:
+    def _generateTSNE(self, amount, password_db):
+        with urllib.request.urlopen(password_db) as f:
             # get amount of these
             password_list = f.read().decode('utf-8').split('\n')
             i = random.randint(0, len(password_list) - amount) # choose a random index to start at

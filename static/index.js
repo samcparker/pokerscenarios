@@ -30,9 +30,7 @@ $(document).ready(function () {
     // Add stars that have been added to list
     if (points) {
       svg.selectAll(".star")
-        .data(points, function (d) {
-          return d.name;
-        })
+        .data(points, function(d) { return d.name; } )
         .enter()
         .append("circle")
         .attr("class", "star")
@@ -47,9 +45,7 @@ $(document).ready(function () {
         });
 
       svg.selectAll("text")
-        .data(points, function (d) {
-          return d.name;
-        })
+        .data(points, function(d) { return d.name; } )
         .enter()
         .append("text")
         .text(function (d) {
@@ -95,10 +91,12 @@ $(document).ready(function () {
 
     // Remove stars that have been removed from the list
     svg.selectAll(".star")
+      .data(points, function(d) { return d.name; } )
       .exit()
       .remove();
 
     svg.selectAll("text")
+    .data(points, function(d) { return d.name; } )
       .exit()
       .remove();
   }
@@ -106,6 +104,38 @@ $(document).ready(function () {
   // Get initial points and display on canvas
   controller.getPoints(PASSWORD_AMOUNT, function (points) {
     update(points);
+  });
+
+  /**
+   * Generate universe listener
+   * 
+   * TODO: Disable this button until response has been made!
+   */
+  var receivedResponse = true;
+  d3.select("#generate_universe").on("click", function() {
+    // Prevent making any new requests until old one has finished
+    if (!receivedResponse) {
+      return;
+    }
+
+    var btn = d3.select(this);
+    btn.attr("disabled", true);
+
+    var params = {
+      name: document.getElementById("universe_name").value,
+      amount: document.getElementById("number_of_stars").value,
+      password_db: document.getElementById("password_db").value,
+      dr_method: document.getElementById("dimensionality_reduction_method").value,
+      linear_regression: document.getElementById("linear_regression").checked,
+      extra_passwords: document.getElementById("extra_passwords").value
+    };
+
+
+    controller.generateUniverse(params, function(points) {
+      receivedResponse = true;
+      btn.attr("disabled", null);
+      update(points);
+    });
   });
 
   /**
