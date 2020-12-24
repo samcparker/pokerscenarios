@@ -15,15 +15,27 @@ $(document).ready(function () {
     }))
     .append("g");
 
+    for (var i = 0; i < 100; i++) {
+      svg.append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", i * 20)
+      .attr("fill", "rgba(0, 0, 0, 0)")
+      .style("stroke", `rgb(255, 255, 255, ${0.2 * (1 - (i * 0.01))})`);
+
+    }
+
+
   function update(points) {
     // Add stars that have been added to list
     if (points) {
-      svg.selectAll("circle")
+      svg.selectAll(".star")
         .data(points, function (d) {
           return d.name;
         })
         .enter()
         .append("circle")
+        .attr("class", "star")
         .attr("fill", function(d) {
           return `hsl(${d.strength * 100}, 100%, 50%)`;
         })
@@ -46,7 +58,7 @@ $(document).ready(function () {
     }
 
     // Update all stars
-    svg.selectAll("circle")
+    svg.selectAll(".star")
       .transition()
       .duration(1000)
       .attr("r", parameters.radius)
@@ -82,7 +94,7 @@ $(document).ready(function () {
       .attr("fill", `rgba(255, 255, 255, ${parameters.text_opacity})`);
 
     // Remove stars that have been removed from the list
-    svg.selectAll("circle")
+    svg.selectAll(".star")
       .exit()
       .remove();
 
