@@ -1,3 +1,7 @@
+/**
+ * Controller class to handle the Password Universe.
+ * @class
+ */
 export default class Controller {
 
     constructor() {
@@ -5,17 +9,17 @@ export default class Controller {
     }
 
     /**
-     * Get the positions of the points.
+     * Run a callback function on the new set of points.
      * 
+     * @param {number} amount The amount of stars required.
      * @param {function} callback Callback function to apply to response 
      */
 
     getPoints(amount, callback) {
-        $.get(`/points?amount=${amount}`, (response) => {
+        $.get(`/points?amount=${amount}`, response => {
             callback(response.points);
             this.points = response.points;
         });
-
     }
 
     /**
@@ -26,8 +30,9 @@ export default class Controller {
     addStar(name, callback) {
         $.get(`/position/${name}`, response => {
             this.points.push(response);
-            // centre the new star
-            this.centreStar(response, function(points) {
+            // Centre the new star.
+            // This could be changed to recenter the currently centered star.
+            this.centreStar(response, function (points) {
                 callback(points);
             });
         });
@@ -36,8 +41,6 @@ export default class Controller {
     /**
      * 
      * Centre all stars around another star.
-     * 
-     * Doesn't seem to work effectively.
      * 
      * @param {object} star 
      * @param {function} callback 
@@ -53,12 +56,12 @@ export default class Controller {
             callback(this.points);
             return;
         }
-        
+
         if (!this.points) {
             // getPoints has not been called
             return null;
         }
-        
+
         // center around star.name
 
         // get distance from point a to point b
