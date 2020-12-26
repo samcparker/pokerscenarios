@@ -148,6 +148,11 @@ $(document).ready(function () {
     });
   });
 
+  d3.select("#screenshot_button").on("click", function () {
+    // save-svg-as-png(document.getElementById("#universe"), "universe.png");
+    controller.screenshot();
+  });
+
   /**
    * Click listener on Add Star/Centre Star
    */

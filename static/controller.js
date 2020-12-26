@@ -24,11 +24,31 @@ export default class Controller {
 
     generateUniverse(params, callback) {
 
-        $.get(`/generate?name=${params.name}&amount=${params.amount}&password_db=${params.password_db}&dr_method=${params.dr_method}&linear_regression=${params.linear_regression}&extra_passwords=${params.extra_passwords}`, 
-        response => {
+        // $.post(`/generate?name=${params.name}&amount=${params.amount}&password_db=${params.password_db}&dr_method=${params.dr_method}&linear_regression=${params.linear_regression}&extra_passwords=${params.extra_passwords}`, 
+
+
+
+        $.post("/generate",
+        {
+            "name": params.name,
+            "amount": params.amount,
+            "password_db": params.password_db,
+            "dr_method": params.dr_method,
+            "linear_regression": params.linear_regression,
+            "extra_passwords": params.extra_passwords
+        })
+        .success(response => {
+            console.log(response);
             this.points = response.points;
             callback(response.points);
         });
+    }
+
+    /**
+     * Take a screenshot of the universe.
+     */
+    screenshot() {
+        saveSvgAsPng(document.getElementById("universe"), "universe.png", {scale: 2});
     }
 
     /**
