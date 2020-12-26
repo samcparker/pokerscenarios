@@ -46,13 +46,14 @@ class PasswordUniverse():
                 f.write(json.dumps(tsne, indent=4))
 
         # file does not exist, generate tSNE with provided parameters
+        
         if self._fileExists("tsne-{}.pickle".format(amount), "stars"):
             clf = pickle.load(open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "rb"))
         else:
-            clf = self._generateCLF(tsne)
-            pickle.dump(clf, open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "wb"))
-
-        return tsne, clf
+            # clf = self._generateCLF(tsne)
+            # pickle.dump(clf, open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "wb"))
+            pass
+        return tsne #, clf
 
     def generate(self, name, amount, password_db, dr_method, linear_regression, extra_passwords):
         tsne = self._generateTSNE(amount, password_db, extra_passwords)
@@ -125,22 +126,19 @@ class PasswordUniverse():
             password_list = f.read().decode('utf-8').split('\n')
             i = random.randint(0, len(password_list) - amount) # choose a random index to start at
             password_list = password_list[i: i + amount]
-            password_list.extend(extra_passwords)
-
+            if len(extra_passwords) > 0:
+                password_list.extend(extra_passwords)
             lev_distance_matrix = []
 
-            print(password_list)
             for i in range(0, len(password_list)):
                 lev_distance_matrix.append([])
                 for j in range(0, len(password_list)):
                     lev = textdistance.levenshtein(password_list[i], password_list[j])
                     lev_distance_matrix[i].append(lev)
 
-            print("hi")
             X = np.array(lev_distance_matrix)
-            print("hi2")
 
-            tsne = TSNE(n_components=2,n_jobs=8)
+            tsne = TSNE(n_components=2, n_jobs=8, verbose=1)
             X_embedded = tsne.fit_transform(X)
 
             # use linear regression        

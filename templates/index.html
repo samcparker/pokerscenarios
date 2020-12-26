@@ -4,10 +4,10 @@
 <head>
   <title>Password Universe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="/static/style.css">
-  
-  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+
   <script src="https://d3js.org/d3.v6.min.js"></script>
   <script src="https://d3js.org/d3-color.v1.min.js"></script>
   <script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
@@ -19,106 +19,83 @@
   <script src="https://d3js.org/d3-drag.v1.min.js"></script>
   <script src="https://d3js.org/d3-zoom.v1.min.js"></script>
   <script src="https://d3js.org/d3-random.v2.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/save-svg-as-png/1.4.17/saveSvgAsPng.js" integrity="sha512-eROF+rLuEUiVuYGmMqhsT8/OwSLcVw5RLjhhJrWLTznvDcwG0WtXrV6w7Ko4Nw7LyWzDZOGlQjfzQd7kUYLQcQ==" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"
-  integrity="sha512-iBAeBWWWFb8HqSBcrqcz98iIpuVH1la39dEYHtyQ/pGpeCQTQVvLJOWAuhv2Q7JSHp9k7hWA7sGxU3hHJe+tFg=="
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/save-svg-as-png/1.4.17/saveSvgAsPng.js"
+    integrity="sha512-eROF+rLuEUiVuYGmMqhsT8/OwSLcVw5RLjhhJrWLTznvDcwG0WtXrV6w7Ko4Nw7LyWzDZOGlQjfzQd7kUYLQcQ=="
     crossorigin="anonymous"></script>
-  </head>
-  
-  <body>
-  <svg id="universe">
-    <defs>
-      <filter id="red-glow" filterUnits="userSpaceOnUse" x="-50%" y="-50%" width="200%" height="200%">
-        <!-- blur the text at different levels-->
-        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur5" />
-        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur10" />
-        <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur20" />
-        <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur30" />
-        <feGaussianBlur in="SourceGraphic" stdDeviation="50" result="blur50" />
-        <!-- merge all the blurs except for the first one -->
-        <feMerge result="blur-merged">
-          <feMergeNode in="blur10" />
-          <feMergeNode in="blur20" />
-          <feMergeNode in="blur30" />
-          <feMergeNode in="blur50" />
-        </feMerge>
-        <!-- recolour the merged blurs red-->
-        <feColorMatrix result="red-blur" in="blur-merged" type="matrix"
-        values=" 1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0" />
-        <feMerge>
-          <feMergeNode in="red-blur" /> <!-- largest blurs coloured red -->
-          <feMergeNode in="blur5" /> <!-- smallest blur left white -->
-          <feMergeNode in="SourceGraphic" /> <!-- original white text -->
-        </feMerge>
-      </filter>
-      
-      
-    </defs>
-  </svg>
-  
-  <div id="control">
-    <h2>Password Universe</h2>
-    <hr>
-    <h3>Generate New Universe</h3>
-    
-    
-    <label for="universe_name"><span>Name</span></label>
-    <input id="universe_name" label="universe name" type="text">
-    <br>
-    <label for="number_of_stars"><span>No. of Stars</span></label>
-    <input id="number_of_stars" label="number of stars" type="number">
-    <br>
-    <label for="password_db"><span>Password Database URL (leave blank for default)</span></label>
-    <input id="password_db" label="Password Database URL" type="text">
-    <br>
-    <label for="dimensionality_reduction_method"><span>Dimensionality Reduction Method</span></label>
-    <select name="dr" id="dimensionality_reduction_method">
-      <option value="tSNE">tSNE</option>
-    </select>
-    <br>
-    <label for="linear_regression"><span>Linear Regression (increases generation time but allows for stars to be added post-generation)</span></label>
-    <input id="linear_regression" label="linear regresson" type="checkbox">
-    <br>
-    
-    <label for="extra_passwords"><span>Extra Passwords (put on separate lines)</span></label>
-    <textarea style="max-width: 100%; min-width: 100%;" label="extra_passwords" id="extra_passwords" rows="10"></textarea>
-    <br>
-    <button id="generate_universe">Generate</button>
-    
-    
-    </form>
-    <hr>
-    <label for="radius_range"><span>Star Size</span></label>
-    <input style="width: 100%" label="radius" type="range" min="1" max="100" id="radius_range" name="radius_range">
-    
-    <label for="width_range"><span>Width Range</span></label>
-    <input style="width: 100%" label="width" type="range" min="1" max="200" value="50" id="width_range"
-    name="width_range">
-    
-    <label for="height_range"><span>Height Range</span></label>
-    <input style="width: 100%" label="height" type="range" min="1" max="200" value="50" id="height_range"
-    name="height_range">
-    
-    <label for="text_opacity_range"><span>Text Opacity</span></label>
-    <input style="width: 100%" label="opacity" type="range" min="1" max="100" value="50" id="text_opacity_range"
-      name="text_opacity_range">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"
+    integrity="sha512-iBAeBWWWFb8HqSBcrqcz98iIpuVH1la39dEYHtyQ/pGpeCQTQVvLJOWAuhv2Q7JSHp9k7hWA7sGxU3hHJe+tFg=="
+    crossorigin="anonymous"></script>
 
-      <hr>
-      <!-- <label for="add_star"><span>Add a Star</span></label>
+</head>
+
+<body>
+  <svg id="universe">
+
+  </svg>
+
+  <div id="control">
+    <h1>Password Universe</h1>
+    <hr>
+
+    <h2>Generate New Universe</h2>
+
+    <form>
+      <div class="mb-3">
+        <label for="universe_name">Universe Name</label>
+        <input class="form-control" id="universe_name" type="text" placeholder="Universe Name">
+      </div>
+      <div class="mb-3">
+        <label for="number_of_stars">Number of Stars</label>
+        <input class="form-control" id="number_of_stars" type="number" value="50" min="0">
+      </div>
+      <div class="mb-3">
+        <label for="password_db">Password Database (URL)</label>
+        <input class="form-control" id="password_db" type="text" placeholder="Universe Name">
+      </div>
+      <div class="mb-3">
+        <label for="dimensionality_reduction_method"><span>Dimensionality Reduction Method</span></label>
+        <select class="form-control" name="dr" id="dimensionality_reduction_method">
+          <option value="tSNE">tSNE</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <input class="form-control" id="linear_regression" label="linear regresson" type="checkbox">
+        <label for="linear_regression"><span>Linear Regression</span></label>
+      </div>
+      <div class="mb-3">
+        <label for="extra_passwords"><span>Extra Passwords (put on separate lines)</span></label>
+        <textarea class="form-control" style="max-width: 100%; min-width: 100%;" label="extra_passwords"
+          id="extra_passwords" rows="2"></textarea>
+      </div>
+      <br>
+      <button type="button" class="btn btn-success" id="generate_universe">Generate</button>
+    </form>
+
+
+    <hr>
+
+    <h3>Load Universe</h3>
+
+    <input style="max-width: 100%;" type="file" id="file" name="filename">
+    <button type="button" class="btn btn-dark" style="width: 100%;" id="load_file_button">Load Universe</button>
+
+
+    <hr>
+
+    <!-- <label for="add_star"><span>Add a Star</span></label>
         <input type="text" style="width: 100%" label="add_star"> -->
-        <div style="width: 100%;">
-          <label><span>Add/Centre a Star</span></label>
-          <input type="text" id="add_star">
-      <button id="add_star_button">Add</button>
-      
+    <div style="width: 100%;">
+      <label><span>Add/Centre a Star</span></label>
+      <input type="text" id="add_star">
+      <button type="button" class="btn btn-dark" id="add_star_button">Add</button>
+
     </div>
-    
-    
-    
-    <h1 id="loading">Calculating star positions... This may take some time.</h1>
+
+
+
   </div>
   <div id="key">
-    <h3>Key</h3>
+    <h2>Key</h2>
     <p>Star Size: Popularity</p>
     <p>Password Strength:</p>
     <div class="row mx-0" style="margin: 0">
@@ -131,13 +108,47 @@
     </div>
     <div style="background-image: linear-gradient(to right, #ff0000, #55ff00); width: 100%; height: 20px"></div>
   </div>
+
   <div id="camera_controls">
-    <div class="row">
-      <div class="col-sm-4">
-        <button id="reset_view_button">Reset View</button>
+    <h2>View Controls</h2>
+    <hr>
+    <h3>Properties</h3>
+    <label for="radius_range"><span>Star Size</span></label>
+    <input style="width: 100%" label="radius" type="range" min="1" max="100" id="radius_range" name="radius_range">
+
+    <label for="width_range"><span>Width Range</span></label>
+    <input style="width: 100%" label="width" type="range" min="1" max="200" value="50" id="width_range"
+      name="width_range">
+
+    <label for="height_range"><span>Height Range</span></label>
+    <input style="width: 100%" label="height" type="range" min="1" max="200" value="50" id="height_range"
+      name="height_range">
+
+    <label for="text_opacity_range"><span>Text Opacity</span></label>
+    <input style="width: 100%" label="opacity" type="range" min="0" max="100" value="50" id="text_opacity_range"
+      name="text_opacity_range">
+
+    <hr>
+
+    <label for="search"><span>Search</span></label>
+    <div class="input-group mb-3">
+      <input type="text" id="search" class="form-control" placeholder="Regex/Search" 
+        aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" id="search_button">Search</button>
       </div>
-      <div class="col-sm-4">
-        <button id="screenshot_button">Take Screenshot</button>
+    </div>
+
+    <hr>
+    <h3>Actions</h3>
+    <div class="row w-100" >
+      <div class="col-sm-6">
+        <button type="button" class="btn btn-dark"  id="reset_view_button">Reset
+          View</button>
+      </div>
+      <div class="col-sm-6">
+        <button type="button" class="btn btn-dark"  id="screenshot_button">Take
+          Screenshot</button>
       </div>
       <!-- <div class="col-sm-4">
         <button id="zoom_in">Zoom In</button>
@@ -149,7 +160,16 @@
   </div>
   <script type="module" src="/static/index.js"></script>
   <script type="module" src="/static/controller.js"></script>
-  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+  </script>
+  <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+  </script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+  </script>
 </body>
 
 </html>

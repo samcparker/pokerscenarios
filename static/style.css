@@ -3,25 +3,43 @@ html, body, svg {
   height: 100%;
   margin: 0;
   background-color: black;
+  overflow: hidden;
 }
+
+
+
+h1, h2, h3 {
+  
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* button {
+  width: 100%;
+} */
+
+/* input[type=text], input[type=number] {
+  width: 100%;
+} */
 
 #camera_controls, #control, #key {
   background-color: rgb(0, 0, 0, 0.5);
   color: white;
-  width: 250px;
+  width: 300px;
   font-family: 'Courier New', Courier, monospace;
   position: absolute;
   padding: 10px 10px 10px 10px;
   border-style: solid;
   border-radius: 5%;
-  margin-top: 10px;
   border-color: rgb(255, 255, 255, 0.1);
   border-width: 1px;
 }
 
 #control {
   top: 0;
-  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 #key {

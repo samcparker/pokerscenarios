@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 
-
+import json
 import passworduniverse
 
 tsne = None
@@ -17,13 +17,19 @@ def index():
 def points():
     global tsne, clf
     password_amount = int(request.args.get("amount", 50))
-    tsne, clf = passworduniverse.PasswordUniverse().getPoints(password_amount)
+    tsne = passworduniverse.PasswordUniverse().getPoints(password_amount)
 
     return {"points": tsne, "response": "received"}
 
 @app.route("/position/<string:new_password>")
 def position(new_password=None):
     return passworduniverse.PasswordUniverse().predict(clf, tsne, new_password)
+
+@app.route("/loadUniverse", methods=["POST"])
+def loadUniverse():
+    # make sure it's a json file
+    # make sure it has the right structure
+    return {"points": json.loads(request.files["file"].read())}
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -40,7 +46,12 @@ def generate():
     linear_regression = request.form["linear_regression"]
     extra_passwords = request.form["extra_passwords"].split("\n")
 
-    for i in range(0, len(extra_passwords)):
+
+
+    # remove all items that are empty strings
+    extra_passwords = list(filter(None, extra_passwords))
+    print(extra_passwords)
+    for i in reversed(range(0, len(extra_passwords))):
         extra_passwords[i] = extra_passwords[i].strip()
 
 

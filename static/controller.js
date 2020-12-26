@@ -6,7 +6,21 @@ export default class Controller {
 
     constructor() {
         this.points = null;
+        this.regex = null;
+
     }
+
+    setRegex(regex) {
+        this.regex = new RegExp(regex);
+    }
+
+    test(password) {
+        if (this.regex == null || this.regex.test(password)) {
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Run a callback function on the new set of points.
@@ -22,11 +36,27 @@ export default class Controller {
         });
     }
 
+    loadUniverse(callback) {
+        var formData = new FormData();
+        formData.append('file', $('#file')[0].files[0]);
+        
+        $.ajax({
+            url : "/loadUniverse",
+            type : "POST",
+            data : formData,
+            processData: false,  
+            contentType: false,  
+            success : response => {
+                callback(response.points);
+                this.points = response.points;
+            }
+        });
+    }
+
+
     generateUniverse(params, callback) {
 
         // $.post(`/generate?name=${params.name}&amount=${params.amount}&password_db=${params.password_db}&dr_method=${params.dr_method}&linear_regression=${params.linear_regression}&extra_passwords=${params.extra_passwords}`, 
-
-
 
         $.post("/generate",
         {
@@ -38,7 +68,6 @@ export default class Controller {
             "extra_passwords": params.extra_passwords
         })
         .success(response => {
-            console.log(response);
             this.points = response.points;
             callback(response.points);
         });
@@ -133,6 +162,8 @@ export default class Controller {
 
             this.points[i].hasOrigin = true;
         }
+
+        
 
         callback(this.points);
 
