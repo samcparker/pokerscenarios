@@ -56,8 +56,7 @@ export default class Controller {
 
     generateUniverse(params, callback) {
 
-        // $.post(`/generate?name=${params.name}&amount=${params.amount}&password_db=${params.password_db}&dr_method=${params.dr_method}&linear_regression=${params.linear_regression}&extra_passwords=${params.extra_passwords}`, 
-
+        // TODO : change to ajax expression
         $.post("/generate",
         {
             "name": params.name,
@@ -67,7 +66,7 @@ export default class Controller {
             "linear_regression": params.linear_regression,
             "extra_passwords": params.extra_passwords
         })
-        .success(response => {
+        .done(response => {
             this.points = response.points;
             callback(response.points);
         });
