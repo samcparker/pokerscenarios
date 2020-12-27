@@ -26,6 +26,11 @@
     integrity="sha512-iBAeBWWWFb8HqSBcrqcz98iIpuVH1la39dEYHtyQ/pGpeCQTQVvLJOWAuhv2Q7JSHp9k7hWA7sGxU3hHJe+tFg=="
     crossorigin="anonymous"></script>
 
+  <!-- https://github.com/wikimedia/jquery.i18n -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.min.js"
+    integrity="sha512-a0tGMh5o0nCoRDiMVaSmiWgB9s/JqfC+PQZHWANTzIhasvm5eH9NkWTmJ4WloaQWLT8fEzRBjvADgFNDf0WusQ=="
+    crossorigin="anonymous"></script>
+
 </head>
 
 <body>
@@ -50,7 +55,7 @@
       </div>
       <div class="mb-3">
         <label for="password_db">Password Database (URL)</label>
-        <input class="form-control" id="password_db" type="text" placeholder="Universe Name">
+        <input class="form-control" id="password_db" type="text" placeholder="Password Database (URL)">
       </div>
       <div class="mb-3">
         <label for="dimensionality_reduction_method"><span>Dimensionality Reduction Method</span></label>
@@ -113,6 +118,7 @@
     <h2>View Controls</h2>
     <hr>
     <h3>Properties</h3>
+
     <label for="radius_range"><span>Star Size</span></label>
     <input style="width: 100%" label="radius" type="range" min="1" max="100" id="radius_range" name="radius_range">
 
@@ -123,6 +129,10 @@
     <label for="height_range"><span>Height Range</span></label>
     <input style="width: 100%" label="height" type="range" min="1" max="200" value="50" id="height_range"
       name="height_range">
+
+    <label for="annotation_range"><span>Annotations</span></label>
+    <input style="width: 100%" label="radius" type="range" min="0" max="500" id="annotation_range"
+      name="annotation_range">
 
     <label for="text_opacity_range"><span>Text Opacity</span></label>
     <input style="width: 100%" label="opacity" type="range" min="0" max="100" value="50" id="text_opacity_range"

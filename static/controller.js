@@ -53,9 +53,24 @@ export default class Controller {
         });
     }
 
+    download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
 
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    // Chooese where to download the universe to
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/downloads/download
     generateUniverse(params, callback) {
 
+        
         // TODO : change to ajax expression
         $.post("/generate",
         {
@@ -68,6 +83,7 @@ export default class Controller {
         })
         .done(response => {
             this.points = response.points;
+            this.download(`${params.name}.pu`, JSON.stringify(response.points));
             callback(response.points);
         });
     }

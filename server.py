@@ -3,6 +3,8 @@ from flask import Flask, render_template, request
 import json
 import passworduniverse
 
+import random
+
 tsne = None
 clf = None
 
@@ -29,13 +31,18 @@ def position(new_password=None):
 def loadUniverse():
     # make sure it's a json file
     # make sure it has the right structure
-    return {"points": json.loads(request.files["file"].read())}
+    points = json.loads(request.files["file"].read())
+    for i in range(0, len(points)):
+        if points[i].get("annot_weight") == None:
+            points[i]["annot_weight"] = random.uniform(0, 1)
+    return {"points": points}
 
 @app.route("/generate", methods=["POST"])
 def generate():
 
     name = request.form["name"]
     amount = request.form["amount"]
+    print("generating " + amount)
     try:
         amount = int(amount)
     except ValueError:
@@ -62,6 +69,7 @@ def generate():
     global tsne, clf
 
     tsne, clf = passworduniverse.PasswordUniverse().generate(name, amount, password_db, dr_method, linear_regression, extra_passwords)
+
     return {"points": tsne} 
 
 

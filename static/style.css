@@ -17,6 +17,10 @@ h1, h2, h3 {
   width: 100%;
 } */
 
+.annot {
+  pointer-events: none;
+}
+
 /* input[type=text], input[type=number] {
   width: 100%;
 } */

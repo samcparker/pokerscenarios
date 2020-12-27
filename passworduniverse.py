@@ -159,7 +159,8 @@ class PasswordUniverse():
                     "name": password_list[i],
                     "ox": Y[i][0].item(),
                     "oy": Y[i][1].item(),
-                    "strength": self._getStrength(password_list[i])
+                    "strength": self._getStrength(password_list[i]),
+                    "annot_weight": random.uniform(0, 1)
                 })
             return stars
         pass

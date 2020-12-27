@@ -25,9 +25,17 @@ $(document).ready(function () {
       .attr("r", i * 20)
       .attr("fill", "rgba(0, 0, 0, 0)")
       .style("stroke", `rgb(255, 255, 255, ${0.2 * (1 - (i * 0.01))})`);
-
-  }
-
+    }
+    
+    svg.append("text")
+    .attr("x", origin_x)
+    .attr("y", origin_y)
+    .attr("text-anchor", "middle")
+    .attr("fill", "white")
+    .style("font", "bold 30px sans-serif")
+    .style("vertical-align", "middle")
+    .text("GENERATE OR LOAD A UNIVERSE");
+  
   function update(points) {
     // Add stars that have been added to list
 
@@ -49,14 +57,14 @@ $(document).ready(function () {
           });
         });
 
-      const annotations = svg.selectAll("text").data(points, function (d) {
+      const annotations = svg.selectAll(".annot").data(points, function (d) {
         return d.name;
       });
 
       annotations.exit()
         .remove();
       annotations.enter()
-        .append("text")
+        .append("text").attr("class", "annot")
         .text(function (d) {
           return d.name;
         });
@@ -86,7 +94,7 @@ $(document).ready(function () {
         return 0.04;
       });
 
-    svg.selectAll("text")
+    svg.selectAll(".annot")
       .transition()
       .duration(1000)
       .attr("x", function (d) {
@@ -104,7 +112,8 @@ $(document).ready(function () {
       })
       .attr("fill", `rgba(255, 255, 255, ${parameters.text_opacity})`)
       .style("visibility", function(d) {
-        if (controller.test(d.name)) {
+        // show annotation if its annotation weight exceeds the user-given one and if it applies to the given search
+        if (d.annot_weight < parameters.annotation_range && controller.test(d.name)) {
           return "visible";
         }
         return "hidden";
@@ -113,9 +122,9 @@ $(document).ready(function () {
   }
 
   // Get initial points and display on canvas
-  controller.getPoints(PASSWORD_AMOUNT, function (points) {
-    update(points);
-  });
+  // controller.getPoints(PASSWORD_AMOUNT, function (points) {
+  //   update(points);
+  // });
 
   /**
    * Generate universe listener
@@ -194,8 +203,11 @@ $(document).ready(function () {
       return window.innerWidth * (d - 100) * 0.005;
     },
     text_opacity: function (d) {
-      return d * 0.01;
+      return d * 0.01; 
     },
+    annotation_range: function (d) {
+      return d * 0.002;
+    }
   };
 
   d3.select("#radius_range").on("input", function () {
@@ -221,6 +233,12 @@ $(document).ready(function () {
     update();
   });
   parameters.text_opacity = modifiers.text_opacity(document.getElementById("text_opacity_range").value);
+
+  d3.select("#annotation_range").on("input", function () {
+    parameters.annotation_range = modifiers.annotation_range(this.value);
+    update();
+  });
+  parameters.annotation_range = modifiers.annotation_range(document.getElementById("annotation_range").value);
 
 
 });
