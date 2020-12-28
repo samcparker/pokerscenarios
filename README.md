@@ -28,8 +28,8 @@ Install Python 3 and virtualenv. A virtual environment is not required but is a 
 Clone the repository and enter into it.
 
 ```
-git clone https://github.com/samcparker/Password-Universe-v2.git
-cd Password-Universe-v2
+git clone https://github.com/samcparker/Password-Universe.git
+cd Password-Universe
 ```
 
 Create a virtual environment and activate it:
@@ -55,8 +55,8 @@ Access the webserver on the address given (by default it is `http://localhost:80
 
 ## Contribute
 
-- Issue Tracker: https://github.com/samcparker/Password-Universe-v2/issues
-- Source Code: https://github.com/samcparker/Password-Universe-v2
+- Issue Tracker: https://github.com/samcparker/Password-Universe/issues
+- Source Code: https://github.com/samcparker/Password-Universe
 
 ## License
 
