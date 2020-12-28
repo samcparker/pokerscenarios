@@ -7,7 +7,12 @@ export default class Controller {
     constructor() {
         this.points = null;
         this.regex = null;
+        this.loading = false;
 
+    }
+
+    isLoading() {
+        return this.loading;
     }
 
     setRegex(regex) {
@@ -39,7 +44,7 @@ export default class Controller {
     loadUniverse(callback) {
         var formData = new FormData();
         formData.append('file', $('#file')[0].files[0]);
-        
+        this.loading = true;
         $.ajax({
             url : "/loadUniverse",
             type : "POST",
@@ -47,8 +52,9 @@ export default class Controller {
             processData: false,  
             contentType: false,  
             success : response => {
-                callback(response.points);
+                this.loading = false;
                 this.points = response.points;
+                callback(response.points);
             }
         });
     }
@@ -70,7 +76,7 @@ export default class Controller {
     // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/downloads/download
     generateUniverse(params, callback) {
 
-        
+        this.loading = true;
         // TODO : change to ajax expression
         $.post("/generate",
         {
@@ -84,6 +90,7 @@ export default class Controller {
         .done(response => {
             this.points = response.points;
             this.download(`${params.name}.pu`, JSON.stringify(response.points));
+            this.loading = false;
             callback(response.points);
         });
     }
@@ -103,6 +110,7 @@ export default class Controller {
     addStar(name, callback) {
         // check if star is already in universe
         for (var i = 0; i < this.points.length; i++) {
+            
             if (this.points[i].name == name) {
                 this.centreStar(this.points[i], function(points) {
                     callback(points);
@@ -136,6 +144,7 @@ export default class Controller {
             // remove origin for each point
             for (var i = 0; i < this.points.length; i++) {
                 this.points[i].hasOrigin = false;
+                this.points[i].isEarth = false;
             }
             callback(this.points);
             return;
@@ -163,9 +172,12 @@ export default class Controller {
 
         // calculate angle and distance from `star` for every star
         for (var i = 0; i < this.points.length; i++) {
+            this.points[i].isEarth = false;
             this.points[i].angle = angle(star, this.points[i]);
             this.points[i].distance = distance(star, this.points[i]);
         }
+
+        star.isEarth = true;
 
         this.points.sort((a, b) => ((a.angle) > (b.angle)) ? 1 : -1);
 
