@@ -173,7 +173,6 @@ d3.select("#generate_universe").on("click", function () {
   btn.attr("disabled", true);
 
   var params = {
-    name: document.getElementById("universe_name").value,
     amount: document.getElementById("number_of_stars").value,
     password_db: document.getElementById("password_db").value,
     dr_method: document.getElementById("dimensionality_reduction_method").value,
@@ -207,7 +206,7 @@ d3.select("#screenshot_button").on("click", function () {
 
 d3.select("#load_file_button").on("click", function () {
   // update with a list of empty points to hide old universe
-  controller.loadUniverse(function (points) {
+  controller.load(function (points) {
     update(points);
   });
   update([]);

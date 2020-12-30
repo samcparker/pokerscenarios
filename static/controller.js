@@ -41,12 +41,12 @@ export default class Controller {
         });
     }
 
-    loadUniverse(callback) {
+    load(callback) {
         var formData = new FormData();
         formData.append('file', $('#file')[0].files[0]);
         this.loading = true;
         $.ajax({
-            url : "/loadUniverse",
+            url : "/load",
             type : "POST",
             data : formData,
             processData: false,  
@@ -80,7 +80,6 @@ export default class Controller {
         // TODO : change to ajax expression
         $.post("/generate",
         {
-            "name": params.name,
             "amount": params.amount,
             "password_db": params.password_db,
             "dr_method": params.dr_method,
@@ -89,7 +88,7 @@ export default class Controller {
         })
         .done(response => {
             this.points = response.points;
-            this.download(`${params.name}.pu`, JSON.stringify(response.points));
+            this.download(`${params.name}.pu`, JSON.stringify(response, null, 1));
             this.loading = false;
             callback(response.points);
         });

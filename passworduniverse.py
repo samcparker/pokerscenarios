@@ -11,20 +11,23 @@ from password_strength import PasswordStats
 
 from sklearn.linear_model import Ridge
 from sklearn.manifold import TSNE
+from sklearn.kernel_ridge import KernelRidge
 
 import pickle
 
 STARS_FOLDER = ".\\stars"
 
 class PasswordUniverse():
+    """Example"""
 
-    def predict(self, clf, stars, password):
+    def predict(self, reg, stars, password):
         # generate distance vector from `password` to all stars
         D = []
         for i in range(0, len(stars)):
-            D.append(textdistance.levenshtein(stars[i]["name"], password))
+            lev = textdistance.levenshtein(stars[i]["name"], password)
+            D.append(lev)
 
-        prediction = clf.predict([D])[0]
+        prediction = reg.predict([D])[0]
 
         return {
             "name": password,
@@ -32,7 +35,6 @@ class PasswordUniverse():
             "oy": prediction[1],
             "strength": self._getStrength(password)
         }
-
 
     def getPoints(self, amount):
         if self._fileExists("tsne-{}.json".format(amount), "stars"):
@@ -48,27 +50,46 @@ class PasswordUniverse():
         # file does not exist, generate tSNE with provided parameters
         
         if self._fileExists("tsne-{}.pickle".format(amount), "stars"):
-            clf = pickle.load(open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "rb"))
+            reg = pickle.load(open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "rb"))
         else:
-            # clf = self._generateCLF(tsne)
-            # pickle.dump(clf, open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "wb"))
+            # reg = self._generateREG(tsne)
+            # pickle.dump(reg, open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "wb"))
             pass
-        return tsne #, clf
+        return tsne #, reg
 
-    def generate(self, name, amount, password_db, dr_method, linear_regression, extra_passwords):
-        tsne = self._generateTSNE(amount, password_db, extra_passwords)
+    def generate(self, *, amount: int, dr_method: str, password_db:str=None, linear_regression:bool=False, extra_passwords: str=None):
+        """Generate a list of passwords with their x position and y position using the given dimensionality reduction method.
+
+        Args:
+            amount: Number of passwords to take from database
+            dr_method: Dimensionality reduction method to use
+            password_db: Password database URL
+            linear_regression: Use linear regression
+            extra_passwords: List of extra passwords to use
         
-        # write tsne to file called {name}.json
-        with open("{}\\{}.json".format(STARS_FOLDER, name), "w") as f:
-            f.write(json.dumps(tsne, indent=4))
+        Returns:
+            Points generated,
+            Linear regression model if required
+        """
+        assert amount > 0, (
+            f'Amount must be more than 0 but amount is {amount}'
+        )
 
-        clf = None
+        assert amount != None, (
+            f'amount is required but no amount was given.'
+        )
 
-        if linear_regression:
-            clf = self._generateCLF(tsne)
-            pickle.dump(clf, open("{}\\{}.pickle".format(STARS_FOLDER, name), "wb"))
+        assert dr_method != None, (
+            f'dr_method is required but no dr_method was given.'
+        )
+        
+        tsne = self._generateTSNE(amount, password_db, extra_passwords)
+        reg = None
 
-        return tsne, clf
+        if linear_regression == True:
+            reg = self._generateReg(tsne)
+
+        return tsne, reg
 
     # check if a file exists with folder name and file name
     def _fileExists(self, file_name, folder_name):
@@ -90,7 +111,7 @@ class PasswordUniverse():
     def _getStrength(self, password):
         return PasswordStats(password).strength()
 
-    def _getCLF(self, stars):
+    def _getReg(self, stars):
         # using stars which are is a list of dictionaries with attributes
         # - name
         # - ox
@@ -103,7 +124,7 @@ class PasswordUniverse():
         pass
         
     
-    def _generateCLF(self, stars):
+    def _generateReg(self, stars):
         # generate a distance matrix
         X = []
         Y = []
@@ -118,7 +139,10 @@ class PasswordUniverse():
         X = np.array(X)
         Y = np.array(Y)
 
-        return Ridge(alpha=1.0).fit(X, Y)
+
+        reg = Ridge(alpha=30)
+        reg.fit(X, Y)
+        return reg
 
     def _generateTSNE(self, amount, password_db, extra_passwords):
         with urllib.request.urlopen(password_db) as f:
