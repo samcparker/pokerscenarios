@@ -24,24 +24,11 @@ reg = None
 app = Flask(__name__,
     static_url_path='/static', )
 
-
-# https://google.github.io/styleguide/pyguide.html
-
 @app.route("/")
 def index():
     """Return the index.html page of the Password Universe website."""
 
     return render_template("index.html"), 200
-
-
-# @app.route("/points")
-# def points():
-#     global tsne, reg
-#     password_amount = int(request.args.get("amount", 50))
-#     tsne = passworduniverse.PasswordUniverse().getPoints(password_amount)
-
-#     return {"points": tsne, "response": "received"}
-
 
 def BadRequest(message):
     return f"Bad Request: {message}", 400
@@ -95,14 +82,17 @@ def load():
     #: the file passed by the user in the post request
     file = request.files["file"]
 
+    # ensure that file exists
     if file == None:
         return BadRequest("No file given")
 
+    # ensure that file is readable
     try:
         file = json.loads(file.read())
     except UnicodeDecodeError:
         return BadRequest("Invalid file")
     
+    # ensure that the file can be indexed
     try:
         points = file["points"]
         reg_json = file["reg"]
@@ -144,22 +134,29 @@ def generate():
               in: POST
 
     """
+    #: number of passwords to include in the universe
     amount = request.form["amount"]
 
+    # ensure that `amount` is an int type, error if not
     try:
         amount = int(amount)
     except ValueError:
         return BadRequest("No amount provided")
+    
+    # ensure that `amount` is greater than 0, error if not
+    if amount <= 0:
+        return BadRequest("Amount must be more than 0")
 
+    #: url to password database
+    # TODO: give option for the user to upload a file
     password_db = request.form["password_db"]
+
+    #: dimensionality reduction method, currently only tSNE (as of 01 Jan 2021)
     dr_method = request.form["dr_method"]
 
+    #: include linear regression
     linear_regression = request.form["linear_regression"]
-
-    if linear_regression == "true":
-        linear_regression = True
-    else:
-        linear_regression = False
+    linear_regression = linear_regression == True
 
     extra_passwords = request.form["extra_passwords"].split("\n")
 
@@ -178,8 +175,6 @@ def generate():
         if not validators.url(password_db):
             return BadRequest("Expexted valid URL but received " + password_db)
 
-    if amount <= 0:
-        return BadRequest("Amount must be more than 0")
 
     global tsne, reg
 
@@ -191,20 +186,8 @@ def generate():
         extra_passwords=extra_passwords
         )
 
-    #: pickled version of reg
-    # https://stackoverflow.com/questions/30469575/how-to-pickle-and-unpickle-to-portable-string-in-python-3
+    #: pickled version of `reg`
     pickled = jsonpickle.dumps(reg)
-
-
-    # f = open(".\\file\\reg.pkl", "wb")
-    # f.write(pickled)
-    # f.close()
-
-    # f = open(".\\file\\points.json", "w")
-    # f.write(json.dumps(tsne))
-    # f.close()
-
-    # shutil.make_archive("response", "zip", ".\\file")
 
     return {
         "points": tsne,
