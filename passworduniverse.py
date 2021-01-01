@@ -11,6 +11,7 @@ from password_strength import PasswordStats
 
 from sklearn.linear_model import Ridge
 from sklearn.manifold import TSNE
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.kernel_ridge import KernelRidge
 
 import pickle
@@ -140,8 +141,11 @@ class PasswordUniverse():
         Y = np.array(Y)
 
 
-        reg = Ridge(alpha=30)
+        # reg = Ridge(alpha=30)
+        reg = KNeighborsRegressor(weights="distance", n_neighbors=5)
+        print(reg)
         reg.fit(X, Y)
+        print(reg.get_params(True))
         return reg
 
     def _generateTSNE(self, amount, password_db, extra_passwords):

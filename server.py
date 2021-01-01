@@ -2,7 +2,7 @@
     :author: Sam Parker
 """
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 
 import json
 import passworduniverse
@@ -10,6 +10,9 @@ import validators
 from urllib.parse import urlparse
 
 import sys
+
+import jsonpickle
+import shutil
 
 import pickle
 import codecs
@@ -91,19 +94,29 @@ def load():
     if file == None:
         return "Bad request: No file", 400
 
-    #: json object of points
+    # #: json object of points
+    # file = json.loads(file.read())
+    # points = file["points"]
+
+
+    # global reg
+    # global tsne
+    
+    # # https://stackoverflow.com/questions/30469575/how-to-pickle-and-unpickle-to-portable-string-in-python-3
+    # reg(pickle.loads(codecs.decode(file["reg"].encode(), "base64")))
+    # tsne = points
+
     file = json.loads(file.read())
     points = file["points"]
+    reg_json = file["reg"]
 
     for i in range(0, len(points)):
         if points[i].get("annot_weight") == None:
             points[i]["annot_weight"] = random.uniform(0, 1)
 
-    global reg
-    global tsne
-    
-    # https://stackoverflow.com/questions/30469575/how-to-pickle-and-unpickle-to-portable-string-in-python-3
-    reg(pickle.loads(codecs.decode(file["reg"].encode(), "base64")))
+    global reg 
+    reg = jsonpickle.loads(reg_json)
+    global tsne 
     tsne = points
     
     return {"points": points}
@@ -176,11 +189,23 @@ def generate():
 
     #: pickled version of reg
     # https://stackoverflow.com/questions/30469575/how-to-pickle-and-unpickle-to-portable-string-in-python-3
-    pickled = codecs.encode(pickle.dumps(reg), "base64").decode()
-    
-    
+    pickled = jsonpickle.dumps(reg)
 
-    return {"points": tsne, "reg": pickled} 
+
+    # f = open(".\\file\\reg.pkl", "wb")
+    # f.write(pickled)
+    # f.close()
+
+    # f = open(".\\file\\points.json", "w")
+    # f.write(json.dumps(tsne))
+    # f.close()
+
+    # shutil.make_archive("response", "zip", ".\\file")
+
+    return {
+        "points": tsne,
+        "reg": pickled
+    }
 
 
 # TODO : get from config.json instead

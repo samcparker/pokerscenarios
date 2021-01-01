@@ -46,12 +46,12 @@ export default class Controller {
         formData.append('file', $('#file')[0].files[0]);
         this.loading = true;
         $.ajax({
-            url : "/load",
-            type : "POST",
-            data : formData,
-            processData: false,  
-            contentType: false,  
-            success : response => {
+            url: "/load",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: response => {
                 this.loading = false;
                 this.points = response.points;
                 callback(response.points);
@@ -78,27 +78,35 @@ export default class Controller {
 
         this.loading = true;
         // TODO : change to ajax expression
-        $.post("/generate",
-        {
-            "amount": params.amount,
-            "password_db": params.password_db,
-            "dr_method": params.dr_method,
-            "linear_regression": params.linear_regression,
-            "extra_passwords": params.extra_passwords
-        })
-        .done(response => {
-            this.points = response.points;
-            this.download(`${params.name}.pu`, JSON.stringify(response, null, 1));
-            this.loading = false;
-            callback(response.points);
-        });
+        $.post("/generate", {
+                "amount": params.amount,
+                "password_db": params.password_db,
+                "dr_method": params.dr_method,
+                "linear_regression": params.linear_regression,
+                "extra_passwords": params.extra_passwords
+            })
+            .done(response => {
+                console.log(response);
+
+                this.points = response.points;
+                this.download(`${params.name}.pu`, JSON.stringify(response, null, 1));
+                this.loading = false;
+                callback(response.points);
+
+
+
+
+
+            });
     }
 
     /**
      * Take a screenshot of the universe.
      */
     screenshot() {
-        saveSvgAsPng(document.getElementById("universe"), "universe.png", {scale: 2});
+        saveSvgAsPng(document.getElementById("universe"), "universe.png", {
+            scale: 2
+        });
     }
 
     /**
@@ -109,15 +117,15 @@ export default class Controller {
     addStar(name, callback) {
         // check if star is already in universe
         for (var i = 0; i < this.points.length; i++) {
-            
+
             if (this.points[i].name == name) {
-                this.centreStar(this.points[i], function(points) {
+                this.centreStar(this.points[i], function (points) {
                     callback(points);
                 });
                 return;
             }
         }
-        
+
         $.get(`/position/${name}`, response => {
             this.points.push(response);
             // Centre the new star.
@@ -189,7 +197,7 @@ export default class Controller {
             this.points[i].hasOrigin = true;
         }
 
-        
+
 
         callback(this.points);
 
