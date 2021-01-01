@@ -31,6 +31,13 @@ def index():
     return render_template("index.html"), 200
 
 def BadRequest(message):
+    """Respond with a Bad Request with a message.
+    ---
+    parameters:
+        - name: message
+          type: string
+          description: message to send bad request with 
+    """
     return f"Bad Request: {message}", 400
 
 
@@ -50,7 +57,7 @@ def position(new_password=None):
         200:
             description: The position of the new password
     """
-
+    
     if new_password == None:
         return BadRequest("No password given")
     if tsne == None:
@@ -58,9 +65,11 @@ def position(new_password=None):
     if reg == None:
         return BadRequest("Regression is not support for this universe")
 
+    #: star with predicted value
     star = passworduniverse.PasswordUniverse() \
                            .predict(reg, tsne, new_password)
 
+    # add annotation weight to star
     star["annot_weight"] = random.uniform(0, 1)
 
     return star, 200
