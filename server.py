@@ -43,6 +43,10 @@ def index():
 #     return {"points": tsne, "response": "received"}
 
 
+def BadRequest(message):
+    return f"Bad Request: {message}", 400
+
+
 @app.route("/position/<string:new_password>")
 def position(new_password=None):
     """Predicts the position of a new password in an existing password universe.
@@ -61,11 +65,11 @@ def position(new_password=None):
     """
 
     if new_password == None:
-        return "Bad request: no password given", 400
+        return BadRequest("No password given")
     if tsne == None:
-        return "Bad request: no universe created", 400
+        return BadRequest("No universe yet")
     if reg == None:
-        return "Bad request: linear regression not done for this universe", 400
+        return BadRequest("Regression is not support for this universe")
 
     star = passworduniverse.PasswordUniverse() \
                            .predict(reg, tsne, new_password)
@@ -92,34 +96,34 @@ def load():
     file = request.files["file"]
 
     if file == None:
-        return "Bad request: No file", 400
+        return BadRequest("No file given")
 
-    # #: json object of points
-    # file = json.loads(file.read())
-    # points = file["points"]
-
-
-    # global reg
-    # global tsne
+    try:
+        file = json.loads(file.read())
+    except UnicodeDecodeError:
+        return BadRequest("Invalid file")
     
-    # # https://stackoverflow.com/questions/30469575/how-to-pickle-and-unpickle-to-portable-string-in-python-3
-    # reg(pickle.loads(codecs.decode(file["reg"].encode(), "base64")))
-    # tsne = points
+    try:
+        points = file["points"]
+        reg_json = file["reg"]
+    except TypeError:
+        return BadRequest("Invalid file")
 
-    file = json.loads(file.read())
-    points = file["points"]
-    reg_json = file["reg"]
 
+    # give each point an annotation weight if it does not already have one
     for i in range(0, len(points)):
         if points[i].get("annot_weight") == None:
             points[i]["annot_weight"] = random.uniform(0, 1)
 
     global reg 
-    reg = jsonpickle.loads(reg_json)
+    # regression model loaded from file
+    if not reg_json:
+        reg = jsonpickle.loads(reg_json)
+
     global tsne 
     tsne = points
     
-    return {"points": points}
+    return {"points": points, "reg": reg != None }
 
 
 @app.route("/generate", methods=["POST"])
@@ -145,7 +149,7 @@ def generate():
     try:
         amount = int(amount)
     except ValueError:
-        return "Bad request: a number has not been given for amount"
+        return BadRequest("No amount provided")
 
     password_db = request.form["password_db"]
     dr_method = request.form["dr_method"]
@@ -172,10 +176,10 @@ def generate():
     else:
         # check if the user-given password_db is valid
         if not validators.url(password_db):
-            return "bad request, password_db is not a valid URL", 400
+            return BadRequest("Expexted valid URL but received " + password_db)
 
     if amount <= 0:
-        return "Bad request: amount must be more than 0", 400
+        return BadRequest("Amount must be more than 0")
 
     global tsne, reg
 

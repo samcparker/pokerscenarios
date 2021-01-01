@@ -61,7 +61,7 @@ export default class Controller {
 
     download(filename, text) {
         var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('href', 'data:json;charset=utf-8,' + encodeURIComponent(text));
         element.setAttribute('download', filename);
 
         element.style.display = 'none';
@@ -92,10 +92,6 @@ export default class Controller {
                 this.download(`${params.name}.pu`, JSON.stringify(response, null, 1));
                 this.loading = false;
                 callback(response.points);
-
-
-
-
 
             });
     }
