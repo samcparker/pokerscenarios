@@ -12,9 +12,7 @@ from urllib.parse import urlparse
 import sys
 
 import jsonpickle
-import shutil
 
-import pickle
 import codecs
 import random
 
@@ -230,4 +228,4 @@ def generate():
 
 
 # TODO : get from config.json instead
-app.run(host="localhost", port=1000)
+app.run(host="localhost", port=8000)

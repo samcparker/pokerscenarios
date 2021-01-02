@@ -99,10 +99,33 @@ class PasswordUniverse():
         tsne = self._generateTSNE(amount, password_db, extra_passwords, no_dimensions)
         reg = None
 
-        print("LINEAR REGRESSION")
-        print(linear_regression)
+        
+
         if linear_regression == True:
             reg = self._generateReg(tsne, no_dimensions)
+
+        # password database containing the occurrence of the passwords too
+        # max occurrence is 5365167 for password `123456`
+        # find percentage of user given password out of the max occurrence
+        # https://raw.githubusercontent.com/FlameOfIgnis/Pwdb-Public/master/statistical-lists/occurrence.100K.txt
+
+        with urllib.request.urlopen("https://raw.githubusercontent.com/FlameOfIgnis/Pwdb-Public/master/statistical-lists/occurrence.100K.txt") as f:
+            password_list = f.read().decode('utf-8').split('\n')
+
+            no = len(tsne)
+
+            for i in range(0, len(tsne)):
+                tsne_password = tsne[i]["name"]
+                for j in range(1, len(password_list) - 1):
+                    name_occ = password_list[j].split("|")
+                    password = name_occ[0]
+
+                    occur = int(name_occ[1])
+
+                    if password == tsne_password:
+                        tsne[i]["brightness"] = no
+                        no = no - 1
+
 
         return tsne, reg
 

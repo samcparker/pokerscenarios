@@ -4,8 +4,6 @@ var controller = new Controller();
 var parameters = {};
 
 let params = (new URL(document.location)).searchParams;
-const PASSWORD_AMOUNT = params.get("amount") || 50;
-
 
 const origin_x = window.innerWidth / 2;
 const origin_y = window.innerHeight / 2;
@@ -81,15 +79,15 @@ function dragStart() {
 }
 
 function dragged() {
+  // if no data, do nothing or it will error
+  if (!data) return;
+
   mouseX = mouseX || 0;
   mouseY = mouseY || 0;
   beta = (d3.event.x - mx + mouseX) * Math.PI / 360;
   alpha = (d3.event.y - my + mouseY) * Math.PI / 720 * (-1);
 
-  if (data) {
-    update(_3d.rotateY(beta).rotateX(alpha)(data));
-
-  }
+  update(_3d.rotateY(beta).rotateX(alpha)(data));
 
 
 }
@@ -110,7 +108,7 @@ function update(points) {
     } else if (controller.no_dimensions == 2) {
       d3.select("#universe").call(d3.zoom().on("zoom", function () {
         d3.select("g").attr("transform", d3.event.transform)
-     }))
+      }))
     }
 
 
@@ -121,6 +119,8 @@ function update(points) {
     const stars = svg.selectAll(".star").data(projectedData, function (d) {
       return d.name;
     });
+
+
 
     stars.exit()
       .remove();
@@ -158,6 +158,13 @@ function update(points) {
       });
   }
 
+  // sort the stars based on their centroid's z
+  svg.selectAll(".star").sort(function (a, b) {
+    var _a = a.centroid.z,
+      _b = b.centroid.z;
+    return _a > _b ? -1 : _a < _b ? 1 : _a >= _b ? 0 : NaN;
+  });
+
   svg.selectAll(".star")
     .transition()
     .duration(function () {
@@ -167,7 +174,9 @@ function update(points) {
       return 1000;
     })
     .attr("r", function (d) {
-      return parameters.radius;
+      var brightness = d.brightness || 0;
+      console.log(brightness);
+      return brightness * 0.01 * parameters.radius + 1;
     })
     .attr("cx", function (d) {
       if (controller.no_dimensions == 3) {
@@ -234,6 +243,8 @@ function update(points) {
       }
       return "hidden";
     });
+
+
   //   var stars = svg.selectAll(".star");
 
   //   data = points;
