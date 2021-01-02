@@ -3,3 +3,4 @@ textdistance
 sklearn
 numpy
 password-strength
+jsonpickle
