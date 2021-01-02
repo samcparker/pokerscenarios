@@ -8,6 +8,7 @@ export default class Controller {
         this.points = null;
         this.regex = null;
         this.loading = false;
+        this.no_dimensions = null;
 
     }
 
@@ -52,6 +53,7 @@ export default class Controller {
             processData: false,
             contentType: false,
             success: response => {
+                this.no_dimensions = response.no_dimensions;
                 this.loading = false;
                 this.points = response.points;
                 callback(response.points);
@@ -83,12 +85,14 @@ export default class Controller {
                 "password_db": params.password_db,
                 "dr_method": params.dr_method,
                 "linear_regression": params.linear_regression,
+                "no_dimensions": params.no_dimensions,
                 "extra_passwords": params.extra_passwords
             })
             .done(response => {
                 console.log(response);
 
                 this.points = response.points;
+                this.no_dimensions = response.no_dimensions;
                 this.download(`${params.name}.pu`, JSON.stringify(response, null, 1));
                 this.loading = false;
                 callback(response.points);

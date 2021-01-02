@@ -20,6 +20,7 @@ import random
 
 tsne = None
 reg = None
+no_dimensions = None
 
 app = Flask(__name__,
     static_url_path='/static', )
@@ -58,16 +59,22 @@ def position(new_password=None):
             description: The position of the new password
     """
     
+    global tsne
+    global reg
+    global no_dimensions
+
     if new_password == None:
         return BadRequest("No password given")
     if tsne == None:
         return BadRequest("No universe yet")
     if reg == None:
         return BadRequest("Regression is not support for this universe")
+    if no_dimensions == None:
+        return BadRequest("No dimension amount given")
 
     #: star with predicted value
     star = passworduniverse.PasswordUniverse() \
-                           .predict(reg, tsne, new_password)
+                           .predict(reg, tsne, new_password, no_dimensions)
 
     # add annotation weight to star
     star["annot_weight"] = random.uniform(0, 1)
@@ -108,6 +115,10 @@ def load():
     except TypeError:
         return BadRequest("Invalid file")
 
+    global no_dimensions
+    #: number of dimensions
+    no_dimensions = file["no_dimensions"]
+
 
     # give each point an annotation weight if it does not already have one
     for i in range(0, len(points)):
@@ -122,7 +133,7 @@ def load():
     global tsne 
     tsne = points
     
-    return {"points": points, "reg": reg != None }
+    return {"points": points, "reg": reg != None, "no_dimensions": no_dimensions}
 
 
 @app.route("/generate", methods=["POST"])
@@ -165,7 +176,7 @@ def generate():
 
     #: include linear regression
     linear_regression = request.form["linear_regression"]
-    linear_regression = linear_regression == True
+    linear_regression = linear_regression == "true"
 
     extra_passwords = request.form["extra_passwords"].split("\n")
 
@@ -182,7 +193,19 @@ def generate():
     else:
         # check if the user-given password_db is valid
         if not validators.url(password_db):
-            return BadRequest("Expexted valid URL but received " + password_db)
+            return BadRequest("Expected valid URL but received " + password_db)
+
+    #: number of dimensions, change to integer in range [2, 3]
+    global no_dimensions
+    no_dimensions = request.form["no_dimensions"]
+    if no_dimensions == "2":
+        no_dimensions = 2
+    elif no_dimensions == "3":
+        no_dimensions = 3
+    else:
+        return BadRequest("Number of dimensions is not valid")
+
+
 
 
     global tsne, reg
@@ -192,7 +215,8 @@ def generate():
         password_db=password_db,
         dr_method=dr_method,
         linear_regression=linear_regression,
-        extra_passwords=extra_passwords
+        extra_passwords=extra_passwords,
+        no_dimensions=no_dimensions
         )
 
     #: pickled version of `reg`
@@ -200,7 +224,8 @@ def generate():
 
     return {
         "points": tsne,
-        "reg": pickled
+        "reg": pickled,
+        "no_dimensions": no_dimensions
     }
 
 

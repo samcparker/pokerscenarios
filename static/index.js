@@ -10,11 +10,13 @@ const PASSWORD_AMOUNT = params.get("amount") || 50;
 const origin_x = window.innerWidth / 2;
 const origin_y = window.innerHeight / 2;
 
+
 let svg = d3.select("#universe")
   .attr("background-color", "#000")
-  .call(d3.zoom().on("zoom", function () {
-    svg.attr("transform", d3.event.transform);
-  }))
+  // .call(d3.zoom().on("zoom", function () {
+  //   svg.attr("transform", d3.event.transform);
+  // }))
+
   .append("g");
 
 for (var i = 0; i < 100; i++) {
@@ -47,25 +49,76 @@ svg.append("text")
   .text("UNIVERSE IS LOADING...")
   .style("visibility", "hidden");
 
-function update(points) {
-  // Add stars that have been added to list
 
-  if (controller.isLoading()) {
-    // add loading message
-    d3.select("#universe-is-loading")
-      .style("visibility", "visible");
-    d3.select("#universe-not-exist-message").remove();
-  } else {
-    d3.select("#universe-is-loading")
-      .style("visibility", "hidden");
+var data = null;
+
+var scale = 1;
+
+var _3d = d3._3d()
+  .origin([0, 0])
+  .scale(scale)
+  .shape("POINT")
+  .x(function (d) {
+    return d.ox;
+  })
+  .y(function (d) {
+    return d.oy;
+  })
+  .z(function (d) {
+    return d.oz || "0";
+  });
+
+
+var mx, mouseX, my, mouseY;
+var alpha = 0,
+  beta = 0;
+
+function dragStart() {
+  mx = d3.event.x;
+  my = d3.event.y;
+
+
+}
+
+function dragged() {
+  mouseX = mouseX || 0;
+  mouseY = mouseY || 0;
+  beta = (d3.event.x - mx + mouseX) * Math.PI / 360;
+  alpha = (d3.event.y - my + mouseY) * Math.PI / 720 * (-1);
+
+  if (data) {
+    update(_3d.rotateY(beta).rotateX(alpha)(data));
+
   }
 
 
+}
+
+function dragEnd() {
+  mouseX = d3.event.x - mx + mouseX;
+  mouseY = d3.event.y - my + mouseY;
+}
+
+
+
+function update(points) {
   if (points) {
 
+    console.log(controller.no_dimensions);
+    if (controller.no_dimensions == 3) {
+      svg.call(d3.drag().on("drag", dragged).on("start", dragStart).on("end", dragEnd));
+    } else if (controller.no_dimensions == 2) {
+      d3.select("#universe").call(d3.zoom().on("zoom", function () {
+        d3.select("g").attr("transform", d3.event.transform)
+     }))
+    }
+
+
+    data = points;
     d3.select("#universe-not-exist-message").remove();
 
-    const stars = svg.selectAll(".star").data(points, function (d) {
+    var projectedData = _3d(points);
+    const stars = svg.selectAll(".star").data(projectedData, function (d) {
       return d.name;
     });
 
@@ -77,10 +130,20 @@ function update(points) {
         return `hsl(${d.strength * 100}, 100%, 50%)`;
       })
       .on("click", function (d) {
-        controller.centreStar(d, function (points) {
-          update(points);
-        });
+        if (controller.no_dimensions == 2) {
+          controller.centreStar(d, function (points) {
+            console.log("centering star");
+            update(points);
+          });
+
+        }
       });
+    stars.on("mouseover", function (d) {
+      return `hsl(${d.strength * 100}, 100%, 70%)`;
+    });
+    stars.on("mouseleave", function (d) {
+      return `hsl(${d.strength * 100}, 100%, 50%)`;
+    });
 
     const annotations = svg.selectAll(".annot").data(points, function (d) {
       return d.name;
@@ -95,22 +158,34 @@ function update(points) {
       });
   }
 
-  // Update all stars
   svg.selectAll(".star")
     .transition()
-    .duration(1000)
-    .attr("r", parameters.radius)
+    .duration(function () {
+      if (controller.no_dimensions == 3) {
+        return 0;
+      }
+      return 1000;
+    })
+    .attr("r", function (d) {
+      return parameters.radius;
+    })
     .attr("cx", function (d) {
+      if (controller.no_dimensions == 3) {
+        return d.projected.x * parameters.width + origin_x;
+      }
       if (d.hasOrigin) {
         return origin_x + d.mx * parameters.width;
       }
-      return origin_x + d.ox * parameters.width;
+      return d.ox * parameters.width + origin_x;
     })
     .attr("cy", function (d) {
+      if (controller.no_dimensions == 3) {
+        return d.projected.y * parameters.height + origin_y;
+      }
       if (d.hasOrigin) {
         return origin_y + d.my * parameters.height;
       }
-      return origin_y + d.oy * parameters.height;
+      return d.oy * parameters.height + origin_y;
     })
     .style("opacity", function (d) {
       if (controller.test(d.name)) {
@@ -121,19 +196,29 @@ function update(points) {
 
   svg.selectAll(".annot")
     .transition()
-    .duration(1000)
-    .attr("x", function (d) {
-      if (d.hasOrigin) {
-        return origin_x + 10 + d.mx * parameters.width;
+    .duration(function () {
+      if (controller.no_dimensions == 3) {
+        return 0;
       }
-      return origin_x + 10 + d.ox * parameters.width;
-
+      return 1000;
+    })
+    .attr("x", function (d) {
+      if (controller.no_dimensions == 3) {
+        return d.projected.x * parameters.width + origin_x;
+      }
+      if (d.hasOrigin) {
+        return origin_x + d.mx * parameters.width;
+      }
+      return d.ox * parameters.width + origin_x;
     })
     .attr("y", function (d) {
-      if (d.hasOrigin) {
-        return origin_y + 10 + d.my * parameters.height;
+      if (controller.no_dimensions == 3) {
+        return d.projected.y * parameters.height + origin_y;
       }
-      return origin_y + 10 + d.oy * parameters.height;
+      if (d.hasOrigin) {
+        return origin_y + d.my * parameters.height;
+      }
+      return d.oy * parameters.height + origin_y;
     })
     .attr("fill", `rgba(255, 255, 255, ${parameters.text_opacity})`)
     .style("font-weight", function (d) {
@@ -149,8 +234,135 @@ function update(points) {
       }
       return "hidden";
     });
+  //   var stars = svg.selectAll(".star");
+
+  //   data = points;
+
+  //   var projectedData = _3d(points);
+  //   stars.data(projectedData, function(d) { return d.name; });
+
+  //   stars.enter()
+  //   .append("circle")
+  //   .attr("class", "star")
+  //   .attr("fill", function (d) {
+  //             return `hsl(${d.strength * 100}, 100%, 50%)`;
+  //           });
+
+  //   // transform points in 3D
+
+
+  //   // stars
+  //   // .attr("cx", function(d) { return ; })
+  //   // .attr("cy", function(d) { return d.projected.y; })
+  //   // .attr("r", 5);
+
+  // console.log("R: ", parameters.radius);
+  //     // Update all stars
+  //   svg.selectAll(".star")
+  //     .attr("r", parameters.radius)
+  //     .attr("cx", function (d) {
+  //       // if (d.hasOrigin) {
+  //       //   return origin_x + d.mx * parameters.width;
+  //       // }
+  //       console.log(parameters.width);
+  //       return d.projected.x;// * parameters.width;
+  //     })
+  //     .attr("cy", function (d) {
+  //       // if (d.hasOrigin) {
+  //       //   return origin_y + d.my * parameters.height;
+  //       // }
+  //       return d.projected.y ;//* parameters.height;
+  //     })
+  //     .style("opacity", function (d) {
+  //       if (controller.test(d.name)) {
+  //         return 1;
+  //       }
+  //       return 0.04;
+  //     });
 
 }
+
+// function update(points) {
+//   // Add stars that have been added to list
+
+//   if (controller.isLoading()) {
+//     // add loading message
+//     d3.select("#universe-is-loading")
+//       .style("visibility", "visible");
+//     d3.select("#universe-not-exist-message").remove();
+//   } else {
+//     d3.select("#universe-is-loading")
+//       .style("visibility", "hidden");
+//   }
+
+
+//   if (points) {
+
+//     d3.select("#universe-not-exist-message").remove();
+
+//     const stars = svg.selectAll(".star").data(points, function (d) {
+//       return d.name;
+//     });
+
+//     stars.exit()
+//       .remove();
+//     stars.enter()
+//       .append("circle").attr("class", "star")
+//       .attr("fill", function (d) {
+//         return `hsl(${d.strength * 100}, 100%, 50%)`;
+//       })
+//       .on("click", function (d) {
+//         controller.centreStar(d, function (points) {
+//           update(points);
+//         });
+//       });
+
+//     const annotations = svg.selectAll(".annot").data(points, function (d) {
+//       return d.name;
+//     });
+
+//     annotations.exit()
+//       .remove();
+//     annotations.enter()
+//       .append("text").attr("class", "annot")
+//       .text(function (d) {
+//         return d.name;
+//       });
+//   }
+
+
+
+//   svg.selectAll(".annot")
+//     .transition()
+//     .duration(1000)
+//     .attr("x", function (d) {
+//       if (d.hasOrigin) {
+//         return origin_x + 10 + d.mx * parameters.width;
+//       }
+//       return origin_x + 10 + d.ox * parameters.width;
+
+//     })
+//     .attr("y", function (d) {
+//       if (d.hasOrigin) {
+//         return origin_y + 10 + d.my * parameters.height;
+//       }
+//       return origin_y + 10 + d.oy * parameters.height;
+//     })
+//     .attr("fill", `rgba(255, 255, 255, ${parameters.text_opacity})`)
+//     .style("font-weight", function (d) {
+//       if (d.isEarth) {
+//         return "bold";
+//       }
+//       return "normal";
+//     })
+//     .style("visibility", function (d) {
+//       // show annotation if its annotation weight exceeds the user-given one and if it applies to the given search
+//       if (d.isEarth || (d.annot_weight < parameters.annotation_range && controller.test(d.name))) {
+//         return "visible";
+//       }
+//       return "hidden";
+//     });
+// }
 
 // Get initial points and display on canvas
 // controller.getPoints(PASSWORD_AMOUNT, function (points) {
@@ -177,6 +389,7 @@ d3.select("#generate_universe").on("click", function () {
     password_db: document.getElementById("password_db").value,
     dr_method: document.getElementById("dimensionality_reduction_method").value,
     linear_regression: document.getElementById("linear_regression").checked,
+    no_dimensions: document.getElementById("no_dimensions").value,
     extra_passwords: document.getElementById("extra_passwords").value
   };
 
@@ -197,6 +410,10 @@ d3.select("#reset_view_button").on("click", function () {
   controller.centreStar(null, function (points) {
     update(points);
   });
+
+  // svg.transition()
+  //   .duration(750)
+  //   .call(zoom.transform, d3.zoomIdentity);
 });
 
 d3.select("#screenshot_button").on("click", function () {

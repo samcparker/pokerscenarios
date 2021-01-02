@@ -8,6 +8,7 @@
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="/static/style.css">
 
+  <script src="https://unpkg.com/d3-3d/build/d3-3d.js"></script>
   <script src="https://d3js.org/d3.v6.min.js"></script>
   <script src="https://d3js.org/d3-color.v1.min.js"></script>
   <script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
@@ -56,6 +57,13 @@
         <label for="dimensionality_reduction_method"><span>Dimensionality Reduction Method</span></label>
         <select class="form-control" name="dr" id="dimensionality_reduction_method">
           <option value="tSNE">tSNE</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="no_dimensions"><span>Number of Dimensions</span></label>
+        <select class="form-control" name="no_dimensions" id="no_dimensions">
+          <option value="2">2D</option>
+          <option value="3">3D</option>
         </select>
       </div>
       <div class="mb-3">

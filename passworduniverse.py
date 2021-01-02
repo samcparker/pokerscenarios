@@ -21,7 +21,7 @@ STARS_FOLDER = ".\\stars"
 class PasswordUniverse():
     """Example"""
 
-    def predict(self, reg, stars, password):
+    def predict(self, reg, stars, password, no_dimensions):
         # generate distance vector from `password` to all stars
         D = []
         for i in range(0, len(stars)):
@@ -30,35 +30,43 @@ class PasswordUniverse():
 
         prediction = reg.predict([D])[0]
 
+        if no_dimensions == 2:
+            return {
+                "name": password,
+                "ox": prediction[0],
+                "oy": prediction[1],
+                "strength": self._getStrength(password)
+            }
         return {
             "name": password,
             "ox": prediction[0],
             "oy": prediction[1],
+            "oz": prediction[2],
             "strength": self._getStrength(password)
         }
 
-    def getPoints(self, amount):
-        if self._fileExists("tsne-{}.json".format(amount), "stars"):
-            # get file and return
-            with open("{}\\tsne-{}.json".format(STARS_FOLDER, amount), "r") as f:
-                tsne = json.loads(f.read())
-        else:
-            tsne = self._generateTSNE(amount, "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt", [])
-            # write tsne to file called tsne-{amount}.json
-            with open("{}\\tsne-{}.json".format(STARS_FOLDER, amount), "w") as f:
-                f.write(json.dumps(tsne, indent=4))
+    # def getPoints(self, amount):
+    #     if self._fileExists("tsne-{}.json".format(amount), "stars"):
+    #         # get file and return
+    #         with open("{}\\tsne-{}.json".format(STARS_FOLDER, amount), "r") as f:
+    #             tsne = json.loads(f.read())
+    #     else:
+    #         tsne = self._generateTSNE(amount, "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt", [], 2)
+    #         # write tsne to file called tsne-{amount}.json
+    #         with open("{}\\tsne-{}.json".format(STARS_FOLDER, amount), "w") as f:
+    #             f.write(json.dumps(tsne, indent=4))
 
-        # file does not exist, generate tSNE with provided parameters
+    #     # file does not exist, generate tSNE with provided parameters
         
-        if self._fileExists("tsne-{}.pickle".format(amount), "stars"):
-            reg = pickle.load(open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "rb"))
-        else:
-            # reg = self._generateREG(tsne)
-            # pickle.dump(reg, open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "wb"))
-            pass
-        return tsne #, reg
+    #     if self._fileExists("tsne-{}.pickle".format(amount), "stars"):
+    #         reg = pickle.load(open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "rb"))
+    #     else:
+    #         # reg = self._generateREG(tsne)
+    #         # pickle.dump(reg, open("{}\\tsne-{}.pickle".format(STARS_FOLDER, amount), "wb"))
+    #         pass
+    #     return tsne #, reg
 
-    def generate(self, *, amount: int, dr_method: str, password_db:str=None, linear_regression:bool=False, extra_passwords: str=None):
+    def generate(self, *, amount: int, dr_method: str, password_db:str=None, linear_regression:bool=False, extra_passwords: str=None, no_dimensions: int):
         """Generate a list of passwords with their x position and y position using the given dimensionality reduction method.
 
         Args:
@@ -67,7 +75,7 @@ class PasswordUniverse():
             password_db: Password database URL
             linear_regression: Use linear regression
             extra_passwords: List of extra passwords to use
-        
+            no_dimensions: Number of dimensions needed
         Returns:
             Points generated,
             Linear regression model if required
@@ -83,12 +91,18 @@ class PasswordUniverse():
         assert dr_method != None, (
             f'dr_method is required but no dr_method was given.'
         )
+
+        assert no_dimensions in [2, 3], (
+            f'expected value in range 2,3 but received {no_dimensions} instead'
+        )
         
-        tsne = self._generateTSNE(amount, password_db, extra_passwords)
+        tsne = self._generateTSNE(amount, password_db, extra_passwords, no_dimensions)
         reg = None
 
+        print("LINEAR REGRESSION")
+        print(linear_regression)
         if linear_regression == True:
-            reg = self._generateReg(tsne)
+            reg = self._generateReg(tsne, no_dimensions)
 
         return tsne, reg
 
@@ -125,14 +139,18 @@ class PasswordUniverse():
         pass
         
     
-    def _generateReg(self, stars):
+    def _generateReg(self, stars, no_dimensions):
         # generate a distance matrix
         X = []
         Y = []
 
         for i in range(0, len(stars)):
             X.append([])
-            Y.append([stars[i]["ox"], stars[i]["oy"]])
+            if no_dimensions == 2:
+                Y.append([stars[i]["ox"], stars[i]["oy"]])
+            else:
+                Y.append([stars[i]["ox"], stars[i]["oy"], stars[i]["oz"]])
+
             for j in range(0, len(stars)):
                 lev = textdistance.levenshtein(stars[i]["name"], stars[j]["name"])
                 X[i].append(lev)
@@ -148,7 +166,7 @@ class PasswordUniverse():
         print(reg.get_params(True))
         return reg
 
-    def _generateTSNE(self, amount, password_db, extra_passwords):
+    def _generateTSNE(self, amount, password_db, extra_passwords, no_dimensions):
         with urllib.request.urlopen(password_db) as f:
             # get amount of these
             password_list = f.read().decode('utf-8').split('\n')
@@ -166,7 +184,7 @@ class PasswordUniverse():
 
             X = np.array(lev_distance_matrix)
 
-            tsne = TSNE(n_components=2, n_jobs=8, verbose=1)
+            tsne = TSNE(n_components=no_dimensions, n_jobs=8, verbose=1)
             X_embedded = tsne.fit_transform(X)
 
             # use linear regression        
@@ -187,8 +205,14 @@ class PasswordUniverse():
                     "name": password_list[i],
                     "ox": Y[i][0].item(),
                     "oy": Y[i][1].item(),
+                    # "oz": Y[i][2].item(),
                     "strength": self._getStrength(password_list[i]),
                     "annot_weight": random.uniform(0, 1)
                 })
+
+                if no_dimensions == 3:
+                    stars[i]["oz"] = Y[i][2].item()
+
+
             return stars
         pass
