@@ -27,97 +27,157 @@
     integrity="sha512-iBAeBWWWFb8HqSBcrqcz98iIpuVH1la39dEYHtyQ/pGpeCQTQVvLJOWAuhv2Q7JSHp9k7hWA7sGxU3hHJe+tFg=="
     crossorigin="anonymous"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js" integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA==" crossorigin="anonymous"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"
+    integrity="sha512-y3o0Z5TJF1UsKjs/jS2CDkeHN538bWsftxO9nctODL5W40nyXIbs0Pgyu7//icrQY9m6475gLaVr39i/uh/nLA=="
+    crossorigin="anonymous"></script>
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap" rel="stylesheet"> 
 
 
 </head>
 
 <body>
-  <svg id="universe">
+  <template id="controls-template">
+    <!-- <div id="view-controls">
+      <h2>View Controls</h2>
+    </div> -->
+    <div id="controls" class="px-2 py-2">
+      <h2>Controls</h2>
+      <div class="row">
+        <div class="col">
+          <h3>General</h3>
 
-  </svg>
+          <div class="row no-gutters">
+            <div class="col px-2">
+              <button class="btn btn-secondary w-100" id="reset-view">Reset View</button>
+            </div>
+            <div class="col px-2">
+              <button class="btn btn-secondary w-100" id="screenshot">Screenshot</button>
+            </div>
+            <div class="col px-2">
+              <button class="btn btn-secondary w-100" id="clone-universe">Clone Universe</button>
+            </div>
+            <div class="col px-2">
+              <button class="btn btn-danger w-100" id="destroy-universe">Destroy Universe</button>
+            </div>
+          </div>
 
-  <div id="control">
-    <h1>Password Universe</h1>
-    <hr>
+          <label for="add_star"><span>Add/Center Star</span></label>
+          <div class="input-group mb-3">
+            <input type="text" id="add_star" class="form-control" placeholder="Add/Center Star" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="add-star-button">Go</button>
+            </div>
+          </div>
 
-    <h2>Generate New Universe</h2>
+          <label for="search"><span>Search</span></label>
+          <div class="input-group mb-3">
+            <input type="text" id="search-field" class="form-control" placeholder="Regex/Search" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <h3>Appearance</h3>
+          <label for="radius_range"><span>Star Size</span></label>
+          <input style="width: 100%" label="radius" type="range" min="1" max="100" id="radius_range"
+            name="radius_range">
 
-    <form>
-      <div class="mb-3">
-        <label for="number_of_stars">Number of Stars</label>
-        <input class="form-control" id="number_of_stars" type="number" value="50" min="0">
+          <label for="width_range"><span>Width Range</span></label>
+          <input style="width: 100%" label="width" type="range" min="1" max="200" value="50" id="width_range"
+            name="width_range">
+
+          <label for="height_range"><span>Height Range</span></label>
+          <input style="width: 100%" label="height" type="range" min="1" max="200" value="50" id="height_range"
+            name="height_range">
+
+          <label for="annotation-range"><span>Annotations</span></label>
+          <input style="width: 100%" label="radius" type="range" min="0" max="500" id="annotation-range"
+            name="annotation-range">
+
+          <label for="text_opacity_range"><span>Text Opacity</span></label>
+          <input style="width: 100%" label="opacity" type="range" min="0" max="100" value="50" id="text_opacity_range"
+            name="text_opacity_range">
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="password_db">Password Database (URL)</label>
-        <input class="form-control" id="password_db" type="text" placeholder="Password Database (URL)">
+    </div>
+  </template>
+
+
+  <div class="row mx-0 h-100">
+    <div class="col-sm-2 px-0" id="control">
+      <div>
+        <h1>Password Universe</h1>
+        <hr>
+
+        <h2>Generate New Universe</h2>
+
+        <form>
+          <div class="mb-3">
+            <label for="number_of_stars">Number of Stars</label>
+            <input class="form-control" id="number_of_stars" type="number" value="50" min="0">
+          </div>
+          <div class="mb-3">
+            <label for="password_db">Password Database (URL)</label>
+            <input class="form-control" id="password_db" type="text" placeholder="Password Database (URL)">
+          </div>
+          <div class="mb-3">
+            <label for="dimensionality_reduction_method"><span>Dimensionality Reduction Method</span></label>
+            <select class="form-control" name="dr" id="dimensionality_reduction_method">
+              <option value="tSNE">tSNE</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="no_dimensions"><span>Number of Dimensions</span></label>
+            <select class="form-control" name="no_dimensions" id="no_dimensions">
+              <option value="2">2D</option>
+              <option value="3">3D</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <input class="form-control" id="linear_regression" label="regresson" type="checkbox">
+            <label for="linear_regression"><span>Include Regression</span></label>
+          </div>
+          <div class="mb-3">
+            <label for="extra_passwords"><span>Extra Passwords (put on separate lines)</span></label>
+            <textarea class="form-control" style="max-width: 100%; min-width: 100%;" label="extra_passwords"
+              id="extra_passwords" rows="2"></textarea>
+          </div>
+          <br>
+          <button type="button" class="btn btn-success" id="generate_universe">Generate</button>
+        </form>
+
+
+        <hr>
+
+        <h3>Load Universe</h3>
+
+        <input style="max-width: 100%;" type="file" id="file" name="filename">
+        <button type="button" class="btn btn-dark" style="width: 100%;" id="load_file_button">Load Universe</button>
+
+
+        <hr>
+
+        <!-- <label for="add_star"><span>Add a Star</span></label>
+            <input type="text" style="width: 100%" label="add_star"> -->
+
+
       </div>
-      <div class="mb-3">
-        <label for="dimensionality_reduction_method"><span>Dimensionality Reduction Method</span></label>
-        <select class="form-control" name="dr" id="dimensionality_reduction_method">
-          <option value="tSNE">tSNE</option>
-        </select>
+    </div>
+    <div class="col-sm-10 px-0 w-100">
+      <div id="universe-container" class="row mx-0 h-100">
+
       </div>
-      <div class="mb-3">
-        <label for="no_dimensions"><span>Number of Dimensions</span></label>
-        <select class="form-control" name="no_dimensions" id="no_dimensions">
-          <option value="2">2D</option>
-          <option value="3">3D</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <input class="form-control" id="linear_regression" label="regresson" type="checkbox">
-        <label for="linear_regression"><span>Include Regression</span></label>
-      </div>
-      <div class="mb-3">
-        <label for="extra_passwords"><span>Extra Passwords (put on separate lines)</span></label>
-        <textarea class="form-control" style="max-width: 100%; min-width: 100%;" label="extra_passwords"
-          id="extra_passwords" rows="2"></textarea>
-      </div>
-      <br>
-      <button type="button" class="btn btn-success" id="generate_universe">Generate</button>
-    </form>
-
-
-    <hr>
-
-    <h3>Load Universe</h3>
-
-    <input style="max-width: 100%;" type="file" id="file" name="filename">
-    <button type="button" class="btn btn-dark" style="width: 100%;" id="load_file_button">Load Universe</button>
-
-
-    <hr>
-
-    <!-- <label for="add_star"><span>Add a Star</span></label>
-        <input type="text" style="width: 100%" label="add_star"> -->
-    <div style="width: 100%;">
-      <label><span>Add/Centre a Star</span></label>
-      <input type="text" id="add_star">
-      <button type="button" class="btn btn-dark" id="add_star_button">Add</button>
-
     </div>
 
 
 
   </div>
-  <div id="key">
-    <h2>Key</h2>
-    <p>Star Size: Popularity</p>
-    <p>Password Strength:</p>
-    <div class="row mx-0" style="margin: 0">
-      <div class="col-sm-6">
-        Bad
-      </div>
-      <div class="col-sm-6" style="text-align: right;">
-        Good
-      </div>
-    </div>
-    <div style="background-image: linear-gradient(to right, #ff0000, #55ff00); width: 100%; height: 20px"></div>
-  </div>
 
-  <div id="camera_controls">
+
+  <!-- <div id="camera_controls">
     <h2>View Controls</h2>
     <hr>
     <h3>Properties</h3>
@@ -164,9 +224,10 @@
       </div>
 
     </div>
-  </div>
+  </div> -->
   <script type="module" src="/static/index.js"></script>
   <script type="module" src="/static/controller.js"></script>
+  <script type="module" src="/static/universe.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"
     integrity="sha512-WNLxfP/8cVYL9sj8Jnp6et0BkubLP31jhTG9vhL/F5uEZmg5wEzKoXp1kJslzPQWwPT1eyMiSxlKCgzHLOTOTQ=="
@@ -181,6 +242,11 @@
   <!-- https://github.com/wikimedia/jquery.i18n -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.min.js"
     integrity="sha512-a0tGMh5o0nCoRDiMVaSmiWgB9s/JqfC+PQZHWANTzIhasvm5eH9NkWTmJ4WloaQWLT8fEzRBjvADgFNDf0WusQ=="
+    crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.0/split.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+    integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
     crossorigin="anonymous"></script>
 </body>
 

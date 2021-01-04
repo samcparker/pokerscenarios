@@ -1,7 +1,10 @@
+import Universe from "/static/universe.js";
+
 /**
  * Controller class to handle the Password Universe.
  * @class
  */
+
 export default class Controller {
 
     constructor() {
@@ -9,6 +12,19 @@ export default class Controller {
         this.regex = null;
         this.loading = false;
         this.no_dimensions = null;
+
+    }
+
+    clone(universe) {
+        var universe_container = d3.select("#universe-container");
+
+        var universe_div = universe_container.append("div")
+            .classed("col", true)
+            .classed("no-gutters", true)
+            .classed("px-0", true)
+            .classed("universe", true);
+
+        new Universe(universe_div, universe.points, universe.no_dimensions);
 
     }
 
@@ -89,16 +105,32 @@ export default class Controller {
                 "extra_passwords": params.extra_passwords
             })
             .done(response => {
-                console.log(response);
+                // console.log(response);
 
-                this.points = response.points;
-                this.no_dimensions = response.no_dimensions;
-                this.download(`${params.name}.pu`, JSON.stringify(response, null, 1));
-                this.loading = false;
-                callback(response.points);
-
+                // this.points = response.points;
+                // this.no_dimensions = response.no_dimensions;
+                // this.download(`${params.name}.pu`, JSON.stringify(response, null, 1));
+                // this.loading = false;
+                // callback(response.points);
+                console.log("hi");
+                this.addUniverse(response);
             });
     }
+
+    addUniverse(response) {
+        // check if panel is taken, add if not
+        var universe_container = d3.select("#universe-container");
+
+        var universe_div = universe_container.append("div")
+            .classed("col", true)
+            .classed("no-gutters", true)
+            .classed("px-0", true)
+            .classed("universe", true);
+
+        var universe = new Universe(universe_div, response.points, response.no_dimensions);
+
+    }
+
 
     /**
      * Take a screenshot of the universe.

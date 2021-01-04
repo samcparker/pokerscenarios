@@ -8,6 +8,9 @@ let params = (new URL(document.location)).searchParams;
 const origin_x = window.innerWidth / 2;
 const origin_y = window.innerHeight / 2;
 
+console.log("hello");
+
+
 
 let svg = d3.select("#universe")
   .attr("background-color", "#000")
@@ -385,16 +388,18 @@ function update(points) {
  * 
  * TODO: Disable this button until response has been made!
  */
+console.log("hi");
 var receivedResponse = true;
 d3.select("#generate_universe").on("click", function () {
   // Prevent making any new requests until old one has finished
-  if (!receivedResponse) {
-    return;
-  }
+  // if (!receivedResponse) {
+  //   return;
+  // }
 
-  var btn = d3.select(this);
-  btn.attr("disabled", true);
-
+  // var btn = d3.select(this);
+  // btn.attr("disabled", true);
+  
+  console.log("updating");
   var params = {
     amount: document.getElementById("number_of_stars").value,
     password_db: document.getElementById("password_db").value,
@@ -404,14 +409,13 @@ d3.select("#generate_universe").on("click", function () {
     extra_passwords: document.getElementById("extra_passwords").value
   };
 
-
   controller.generateUniverse(params, function (points) {
-    receivedResponse = true;
-    btn.attr("disabled", null);
+    // receivedResponse = true;
+    // btn.attr("disabled", null);
     update(points);
   });
-  // update with a list of empty points to hide old universe
-  update([]);
+  // // update with a list of empty points to hide old universe
+  // update([]);
 });
 
 /**
@@ -472,32 +476,32 @@ let modifiers = {
   }
 };
 
-d3.select("#radius_range").on("input", function () {
-  parameters.radius = modifiers.radius(this.value);
-  update();
-});
-parameters.radius = modifiers.radius(document.getElementById("radius_range").value);
+// d3.select("#radius_range").on("input", function () {
+//   parameters.radius = modifiers.radius(this.value);
+//   update();
+// });
+// parameters.radius = modifiers.radius(document.getElementById("radius_range").value);
 
-d3.select("#width_range").on("input", function () {
-  parameters.width = modifiers.width(this.value);
-  update();
-});
-parameters.width = modifiers.width(document.getElementById("width_range").value);
+// d3.select("#width_range").on("input", function () {
+//   parameters.width = modifiers.width(this.value);
+//   update();
+// });
+// parameters.width = modifiers.width(document.getElementById("width_range").value);
 
-d3.select("#height_range").on("input", function () {
-  parameters.height = modifiers.height(this.value);
-  update();
-});
-parameters.height = modifiers.height(document.getElementById("height_range").value);
+// d3.select("#height_range").on("input", function () {
+//   parameters.height = modifiers.height(this.value);
+//   update();
+// });
+// parameters.height = modifiers.height(document.getElementById("height_range").value);
 
-d3.select("#text_opacity_range").on("input", function () {
-  parameters.text_opacity = modifiers.text_opacity(this.value);
-  update();
-});
-parameters.text_opacity = modifiers.text_opacity(document.getElementById("text_opacity_range").value);
+// d3.select("#text_opacity_range").on("input", function () {
+//   parameters.text_opacity = modifiers.text_opacity(this.value);
+//   update();
+// });
+// parameters.text_opacity = modifiers.text_opacity(document.getElementById("text_opacity_range").value);
 
-d3.select("#annotation_range").on("input", function () {
-  parameters.annotation_range = modifiers.annotation_range(this.value);
-  update();
-});
-parameters.annotation_range = modifiers.annotation_range(document.getElementById("annotation_range").value);
+// d3.select("#annotation_range").on("input", function () {
+//   parameters.annotation_range = modifiers.annotation_range(this.value);
+//   update();
+// });
+// parameters.annotation_range = modifiers.annotation_range(document.getElementById("annotation_range").value);
